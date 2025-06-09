@@ -1,0 +1,41 @@
+{% extends "paginasweb/index.html" %}
+
+{% load static %}
+
+{% block conteudo %}
+<h3>Lista de regras cadastradas</h3>
+
+<table border="1">
+
+    <tr>
+        <th>Descrição</th>
+        <th>Horário Início</th>
+        <th>Horário Fim</th>
+        <th>Valor Mínimo</th>
+        <th>Valor Máximo</th>
+        <th>Tipo Sensor</th>
+        <th>Opções</th>
+    </tr>
+
+    {% for obj in object_list %}
+    <tr>
+        <td>{{ obj.descricao }}</td>
+        <td>{{ obj.horario_inicio }}</td>
+        <td>{{ obj.horario_fim }}</td>
+        <td>{{ obj.valor_minimo }}</td>
+        <td>{{ obj.valor_maximo }}</td>
+        <td>{{ obj.tipo_sensor }}</td>
+        <td>
+            <a href="#">Editar</a>
+            <a href="#">Excluir</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">Nenhum registro encontrado.</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

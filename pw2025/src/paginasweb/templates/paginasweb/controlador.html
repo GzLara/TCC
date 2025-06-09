@@ -1,0 +1,35 @@
+{% extends "paginasweb/index.html" %}
+
+{% load static %}
+
+{% block conteudo %}
+<h3>Lista de controladores cadastrados</h3>
+
+<table border="1">
+
+    <tr>
+        <th>Cadastro Cliente</th>
+        <th>Nome</th>
+        <th>Descrição</th>
+        <th>Opções</th>
+    </tr>
+
+    {% for obj in object_list %}
+    <tr>
+        <td>{{ obj.cadastro_cliente }}</td>
+        <td>{{ obj.nome }}</td>
+        <td>{{ obj.descricao }}</td>
+        <td>
+            <a href="{% url "editar-controlador" obj.pk %}">Editar</a>
+            <a href="{% url "excluir-controlador" obj.pk %}">Excluir</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">Nenhum registro encontrado.</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}

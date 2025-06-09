@@ -1,0 +1,22 @@
+{% extends "paginasweb/index.html" %}
+
+{% load static %}
+
+{% block conteudo %}
+
+<h3>{{titulo}}</h3>
+
+<p>* Campos obrigatórios</p>
+
+<form action="" method="post">
+
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">{{ botao }}</button>
+
+</form>
+
+{% endblock conteudo %}
+

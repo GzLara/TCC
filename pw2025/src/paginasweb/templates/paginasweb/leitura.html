@@ -1,0 +1,39 @@
+{% extends "paginasweb/index.html" %}
+
+{% load static %}
+
+{% block conteudo %}
+<h3>Lista de leituras cadastradas</h3>
+
+<table border="1">
+
+    <tr>
+        <th>Tipo Sensor</th>
+        <th>Valor</th>
+        <th>Data</th>
+        <th>Sensor</th>
+        <th>Alerta</th>
+        <th>Opções</th>
+    </tr>
+
+    {% for obj in object_list %}
+    <tr>
+        <td>{{ obj.tipo_sensor }}</td>
+        <td>{{ obj.valor }}</td>
+        <td>{{ obj.data }}</td>
+        <td>{{ obj.sensor }}</td>
+        <td>{{ obj.alerta }}</td>
+        <td>
+            <a href="#">Editar</a>
+            <a href="#">Excluir</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="3">Nenhum registro encontrado.</td>
+    </tr>
+    {% endfor %}
+
+</table>
+
+{% endblock %}
