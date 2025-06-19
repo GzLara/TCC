@@ -14,6 +14,7 @@ urlpatterns = [
     path('tiposensor/', TipoSensorView.as_view(), name='tiposensor'), #Página tipo de sensor
     path('cadastro/', CadastroView.as_view(), name='cadastro'), # Pagina de cadastro de clientes
     path('controlador/', ControladorView.as_view(), name='controlador'), # Pagina de cadastro de controlador
+    path('admin/', AdminView.as_view(), name='admin'), # Página da área do Admin
 
     path('cadastrar/tiposensor/', TipoSensorCreate.as_view(), name='cadastrar-tipo-sensor'),
     path('cadastrar/controlador/', ControladorCreate.as_view(), name='cadastrar-controlador'),

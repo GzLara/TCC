@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import TipoSensor, Controlador, Sensor, Regra, Leitura, Cadastro
+from .models import TipoSensor, Controlador, Sensor, Regra, Leitura, Cadastro, Admin
 from django.views import View
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils.decorators import method_decorator
@@ -10,12 +10,18 @@ from django.utils.dateparse import parse_date, parse_time
 from django.utils.timezone import make_aware
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
+from django.contrib.auth import authenticate, login
+from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.contrib.auth.models import User
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 API_SECRET_KEY = "Projeto1MC"
 
 @method_decorator(csrf_exempt, name='dispatch')  # Desativa CSRF para chamadas externas
 class LeituraCreateView(View):
-    def post(self, request):
+     def post(self, request):
         # Verifica chave de API no header
         auth_header = request.headers.get("X-API-KEY")
         if auth_header != API_SECRET_KEY:
@@ -24,10 +30,11 @@ class LeituraCreateView(View):
         try:
             data_str = request.POST.get("data")
             hora_str = request.POST.get("hora")
-            temperatura_str = request.POST.get("temperatura")
+            sensor_str = request.POST.get("sensor")
+            valor_str = request.POST.get("valor")
 
-            if not all([data_str, hora_str, temperatura_str]):
-                return HttpResponseBadRequest("Campos obrigatórios: data, hora, temperatura")
+            if not all([data_str, hora_str, sensor_str, valor_str]):
+                return HttpResponseBadRequest("Campos obrigatórios: data, hora, sensor, valor")
 
             data_parsed = parse_date(data_str)
             hora_parsed = parse_time(hora_str)
@@ -38,16 +45,23 @@ class LeituraCreateView(View):
             datahora_aware = make_aware(datahora)
 
             try:
-                temperatura = Decimal(temperatura_str)
+                valor = Decimal(valor_str)
             except InvalidOperation:
-                return HttpResponseBadRequest("Temperatura inválida")
+                return HttpResponseBadRequest("Valor inválido")
 
-            leitura = Leitura.objects.create(data=datahora_aware, temperatura=temperatura)
+            # Certifique-se de que seu modelo Leitura tenha os campos: sensor (CharField) e valor (DecimalField)
+            leitura = Leitura.objects.create(
+                data=datahora_aware,
+                sensor=sensor_str,
+                valor=valor
+            )
 
             return JsonResponse({"status": "sucesso", "id": leitura.id})
 
         except Exception as e:
             return HttpResponseBadRequest(f"Erro inesperado: {str(e)}")
+        
+
 
 
 
@@ -83,7 +97,21 @@ class RegraView(TemplateView):
 class LeituraView(TemplateView):
      template_name = 'paginasweb/cadastrar/form.html' 
 
+#Página "Admin"
+class AdminView(TemplateView):
+     template_name = 'paginasweb/admin.html'
+
 # Views de cadastro (CreateView)
+
+class AdminCreate(CreateView):
+     model = Admin
+     fields = ['nome', 'email', 'senha']
+     template_name = 'admin.html'
+     success_url = reverse_lazy('admin.html')
+     extra_context = {
+          'titulo': 'Cadastro de cliente',
+          'botao': 'Cadastrar'
+     }
 
 class CadastroCreate(CreateView):
      model = Cadastro
@@ -287,3 +315,29 @@ class RegraView(ListView):
 class LeituraView(ListView):
      model = Leitura
      template_name = 'paginasweb/leitura.html'
+
+########################################################## Teste user permitido
+
+def admin_login_view(request):
+    if request.method == 'POST':
+        nome = request.POST.get('nome')
+        senha = request.POST.get('senha')
+
+        user = authenticate(request, username=nome, password=senha)
+
+        if user is not None:
+            if user.is_superuser:
+                login(request, user)
+                return redirect('admin_index')  # nome correto da URL da view protegida
+            else:
+                return HttpResponse("Acesso negado: apenas superusuários podem acessar.")
+        else:
+            return HttpResponse("Usuário ou senha inválidos.")
+    else:
+        return HttpResponse("Método não permitido.", status=405)
+
+
+@login_required
+@user_passes_test(lambda u: u.is_superuser)
+def admin_index(request):
+    return render(request, 'paginasweb/admin.html')

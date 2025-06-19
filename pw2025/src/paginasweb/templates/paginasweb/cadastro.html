@@ -3,9 +3,9 @@
 
 {% block conteudo %}
 
-<div class="d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card p-4 shadow" style="width: 100%; max-width: 500px;">
-    <h3 class="text-center mb-4">Login de Usuário</h3>
+<div class="d-flex justify-content-center align-items-center min-vh-100" style="gap: 65px;">
+  <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 500px;">
+    <h3 class="text-center mb-4 ">Login de Usuário</h3>
 
     <form action="{% url 'cadastrar-cadastro' %}" method="post">
       <div class="text-center">
@@ -29,13 +29,44 @@
         <div class="d-flex justify-content-end align-items-center mt-3">
           <span class="me-1 small">Não possui conta?</span>
           <a class="btn btn-secondary p-0 m-0 small" href="{% url 'listar-clientes-cadastro' %}" role="button">Cadastrar-se</a>
-
         </div>
-        <button type="submit" class="btn btn-primary mt-3 ">Enviar</button>
+        <button type="submit" class="btn btn-primary mt-3">Enviar</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 500px;">
+    <h3 class="text-center mb-4">Login de Admin</h3>
+
+    <form action="{% url 'cadastrar-cadastro' %}" method="post">
+      <div class="text-center">
+        {% csrf_token %}
+        <div class="mb-3 text-start">
+          <label for="InputName2" class="form-label">Nome</label>
+          <input type="text" name="nome" class="form-control" id="InputName2" required>
+        </div>
+
+        <div class="mb-3 text-start">
+          <label for="InputEmail2" class="form-label">Email</label>
+          <input type="email" name="email" class="form-control" id="InputEmail2" required>
+          <div class="form-text">Seu email nunca será compartilhado.</div>
+        </div>
+
+        <div class="mb-3 text-start">
+          <label for="exampleInputPassword2" class="form-label">Senha</label>
+          <input type="password" name="senha" class="form-control" id="exampleInputPassword2" required>
+        </div>
+
+        <div class="d-flex justify-content-end align-items-center mt-3">
+          <span class="me-1 small">ㅤ</span>
+          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'admin' %}" role="button">ㅤ</a>
+        </div>
+
+        <button type="submit" class="btn btn-tertiary mt-3 ">Enviar</button>
       </div>
     </form>
   </div>
 </div>
 
-  
+
 {% endblock %}

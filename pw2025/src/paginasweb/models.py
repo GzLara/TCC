@@ -18,6 +18,15 @@ class TipoSensor(models.Model):
         return f"{self.numero_serial}"
 
     
+class Admin(models.Model):
+    nome = models.CharField(max_length=30, verbose_name="Nome")
+    email = models.EmailField(max_length=255, verbose_name="E-mail")
+    senha = models.CharField(max_length=255, verbose_name="Senha")
+    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.nome}"
+
 class Cadastro(models.Model):
     nome = models.CharField(max_length=30, verbose_name="Nome")
     email = models.EmailField(max_length=255, verbose_name="E-mail")

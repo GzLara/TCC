@@ -74,8 +74,15 @@ div.mb-3 {
   color: #EF233C !important;
 }
 
-.span {
-
-
-
+.btn-tertiary {
+  background-color: #f7d113 !important; /* Usa !important se Bootstrap estiver sendo usado */
+  border-color: #f7d113 !important;
 }
+
+.btn-tertiary:hover {
+  background-color: #c4a719 !important;
+  border-color: #c4a719 !important;
+}
+
+
+
