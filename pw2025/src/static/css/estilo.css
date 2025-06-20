@@ -29,6 +29,7 @@ body{
 #menu li a:hover{
     border-radius: 12px;
     background-color: #faf1c3;
+  
 }
 
 div.mb-3 {
@@ -59,6 +60,8 @@ div.mb-3 {
 .btn-primary:hover {
   background-color: #ab192a !important;
   border-color: #ab192a !important;
+   transition: 0.3s ease;
+
 }
 
 .btn-secondary {
@@ -72,17 +75,90 @@ div.mb-3 {
   background-color: white !important;
   border-color: white !important;
   color: #EF233C !important;
+  transition: 0.3s ease;
 }
 
 .btn-tertiary {
   background-color: #f7d113 !important; /* Usa !important se Bootstrap estiver sendo usado */
   border-color: #f7d113 !important;
+  color: black;
 }
 
 .btn-tertiary:hover {
   background-color: #c4a719 !important;
   border-color: #c4a719 !important;
+  transition: 0.3s ease;
+
+}
+
+.btn-quaternary {
+  background-color: #EF233C !important; /* Usa !important se Bootstrap estiver sendo usado */
+  border-color: #EF233C !important;
+  color: white !important;
+  
+  
+}
+
+.btn-quaternary:hover {
+  background-color: #ab192a !important;
+  border-color: #ab192a !important;
+  transition: 0.3s ease;
+
 }
 
 
+#menuadmin{
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    background-color: #58a4b0;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
 
+#menuadmin li{
+    display: inline;
+    margin-right: 10px;
+}
+#menuadmin li a{
+    text-decoration: none;
+    color: #ffff;
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #58a4b0;
+    
+}
+#menuadmin li a:hover{
+    border-radius: 12px;
+    background-color: #d9e9ff;
+    color: black;
+}
+
+body.admin{
+    background-color: #d9e9ff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 18px
+}
+
+.footeradmin {
+  position: bottom;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #d9e9ff;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centraliza horizontalmente */
+  font-size: 16px;
+  z-index: 1000;
+  text-align: center; /* segurança extra */
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}

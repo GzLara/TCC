@@ -1,39 +1,44 @@
-
-{% extends "paginasweb/index.html" %}
-
+{% extends "paginasweb/adminindex.html" %}
 {% load static %}
 
 {% block conteudo %}
 
-<h3>Lista de clientes cadastrados</h3>
+<div class="d-flex justify-content-center align-items-center min-vh-100">
+  <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 1000px; ">
+    <h3 class="text-center mb-4">Lista de clientes cadastrados</h3>
 
-<table border="1">
-
-    <tr>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Senha</th>
-        <th>Cadastrado em</th>
-        <th>Opções</th>
-    </tr>
-
-    {% for obj in object_list %}
-    <tr>
-        <td>{{ obj.nome }}</td>
-        <td>{{ obj.email }}</td>
-        <td>{{ obj.senha }}</td>
-        <td>{{ obj.cadastrado_em }}</td>
-        <td>
-            <a href="{% url "editar-cadastro" obj.pk %}">Editar</a>
-            <a href="{% url "excluir-cadastro" obj.pk %}">Excluir</a>
-        </td>
-    </tr>
-    {% empty %}
-    <tr>
-        <td colspan="3">Nenhum registro encontrado.</td>
-    </tr>
-    {% endfor %}
-
-</table>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered align-middle text-center">
+        <thead>
+          <tr>
+            <th style="background-color: #58a4b0; color: white;">Nome</th>
+            <th style="background-color: #58a4b0; color: white;">Email</th>
+            <th style="background-color: #58a4b0; color: white;">Senha</th>
+            <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
+            <th style="background-color: #58a4b0; color: white;">Opções</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in object_list %}
+          <tr>
+            <td>{{ obj.nome }}</td>
+            <td>{{ obj.email }}</td>
+            <td>{{ obj.senha }}</td>
+            <td>{{ obj.cadastrado_em }}</td>
+            <td>
+              <a href="{% url 'editar-cadastro' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'excluir-cadastro' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="5">Nenhum registro encontrado.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

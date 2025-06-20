@@ -10,6 +10,10 @@ from django.db import models
 # Cada campo tem suas propriedades, que estão disponíveis em
 # https://docs.djangoproject.com/pt-br/4.2/ref/models/fields/#field-options
 
+class IndexCliente(models.Model):
+    descricao = models.CharField(max_length=255, verbose_name="Descrição")
+
+
 class TipoSensor(models.Model):
     numero_serial = models.CharField(max_length=255, verbose_name="Número Serial")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")

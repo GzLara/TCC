@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import TipoSensor, Controlador, Sensor, Regra, Leitura, Cadastro, Admin
+from .models import TipoSensor, Controlador, Sensor, Regra, Leitura, Cadastro, Admin, IndexCliente
 from django.views import View
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils.decorators import method_decorator
@@ -16,6 +16,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
+
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -62,12 +63,14 @@ class LeituraCreateView(View):
             return HttpResponseBadRequest(f"Erro inesperado: {str(e)}")
         
 
-
-
-
 # Página inicial
 class IndexView(TemplateView):
     template_name = 'paginasweb/index.html'
+
+# Página inicial quando o cliente faz login
+
+class IndexClienteView(TemplateView):
+    template_name = 'paginasweb/indexcliente.html'
 
 # Página "sobre"
 class SobreView(TemplateView):
@@ -99,15 +102,22 @@ class LeituraView(TemplateView):
 
 #Página "Admin"
 class AdminView(TemplateView):
-     template_name = 'paginasweb/admin.html'
+     template_name = 'paginasweb/adminindex.html'
 
 # Views de cadastro (CreateView)
+
+class IndexClienteCreate(CreateView):
+     model: IndexCliente
+     fields = ['descricao']
+     template_name = 'paginasweb/indexcliente.html'
+     success_url = reverse_lazy('indexcliente')
+
 
 class AdminCreate(CreateView):
      model = Admin
      fields = ['nome', 'email', 'senha']
-     template_name = 'admin.html'
-     success_url = reverse_lazy('admin.html')
+     template_name = 'paginasweb/adminindex.html'
+     success_url = reverse_lazy('adminindex')
      extra_context = {
           'titulo': 'Cadastro de cliente',
           'botao': 'Cadastrar'
@@ -117,7 +127,7 @@ class CadastroCreate(CreateView):
      model = Cadastro
      fields = ['nome', 'email', 'senha']
      template_name = 'paginasweb/cadastro.html'
-     success_url = reverse_lazy('listar-clientes-cadastro')
+     success_url = reverse_lazy('indexcliente')
      extra_context = {
           'titulo': 'Cadastro de cliente',
           'botao': 'Cadastrar'
@@ -179,8 +189,8 @@ class LeituraCreate(CreateView):
 class CadastroUpdate(UpdateView):
      model = Cadastro
      fields = ['nome', 'email', 'senha']
-     template_name = 'paginasweb/form.html'
-     success_url = reverse_lazy('index')
+     template_name = 'paginasweb/formadmin.html'
+     success_url = reverse_lazy('adminindex')
      extra_context = {
           'titulo': 'Cadastro de cliente',
           'botao': 'Cadastrar'
@@ -236,8 +246,8 @@ class LeituraUpdate(UpdateView):
 
 class CadastroDelete(DeleteView):
      model = Cadastro
-     template_name = 'paginasweb/form.html'
-     success_url = reverse_lazy('index')
+     template_name = 'paginasweb/formadmin.html'
+     success_url = reverse_lazy('adminindex')
      extra_context = {
           'titulo': 'Excluir cadastro de cliente',
           'botao': 'Excluir'
@@ -318,26 +328,7 @@ class LeituraView(ListView):
 
 ########################################################## Teste user permitido
 
-def admin_login_view(request):
+
+def redirecionar_para_adminindex(request):
     if request.method == 'POST':
-        nome = request.POST.get('nome')
-        senha = request.POST.get('senha')
-
-        user = authenticate(request, username=nome, password=senha)
-
-        if user is not None:
-            if user.is_superuser:
-                login(request, user)
-                return redirect('admin_index')  # nome correto da URL da view protegida
-            else:
-                return HttpResponse("Acesso negado: apenas superusuários podem acessar.")
-        else:
-            return HttpResponse("Usuário ou senha inválidos.")
-    else:
-        return HttpResponse("Método não permitido.", status=405)
-
-
-@login_required
-@user_passes_test(lambda u: u.is_superuser)
-def admin_index(request):
-    return render(request, 'paginasweb/admin.html')
+        return redirect('adminindex')  # redireciona para a página principal do admin

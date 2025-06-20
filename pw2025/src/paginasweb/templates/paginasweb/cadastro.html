@@ -28,7 +28,7 @@
 
         <div class="d-flex justify-content-end align-items-center mt-3">
           <span class="me-1 small">Não possui conta?</span>
-          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'listar-clientes-cadastro' %}" role="button">Cadastrar-se</a>
+          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'indexcliente' %}" role="button">Cadastrar-se</a>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Enviar</button>
       </div>
@@ -38,7 +38,7 @@
   <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 500px;">
     <h3 class="text-center mb-4">Login de Admin</h3>
 
-    <form action="{% url 'cadastrar-cadastro' %}" method="post">
+    <form action="{% url 'login-admin' %}" method="post">
       <div class="text-center">
         {% csrf_token %}
         <div class="mb-3 text-start">
@@ -59,7 +59,7 @@
 
         <div class="d-flex justify-content-end align-items-center mt-3">
           <span class="me-1 small">ㅤ</span>
-          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'admin' %}" role="button">ㅤ</a>
+          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'adminindex' %}" role="button">ㅤ</a>
         </div>
 
         <button type="submit" class="btn btn-tertiary mt-3 ">Enviar</button>
