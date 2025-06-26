@@ -4,8 +4,31 @@ from .views import LeituraCreateView
 
 from .views import *
 
+from django.contrib.auth import views as auth_views
+
 
 urlpatterns = [
+
+    # Criar rota para página de login
+   path('cadastrar/cadastro/', auth_views.LoginView.as_view(
+       template_name = 'paginasweb/formadmin.html',
+       extra_context = {
+          'titulo': 'Login',
+          'botao': 'Entrar',
+     }
+   ), name='cadastro'),
+
+   path('senha/', auth_views.PasswordChangeView.as_view(
+       template_name = 'paginasweb/form.html',
+       extra_context = {
+          'titulo': 'Atualizar senha',
+          'botao': 'Salvar',
+     }
+   ), name='senha'),
+
+   # Criar rota de logout
+   path('logout/', auth_views.LogoutView.as_view(), name ='logout'),
+
     #parte tcc
 	path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
     path('login-admin/', redirecionar_para_adminindex, name='login-admin'),  # onde o formulário envia

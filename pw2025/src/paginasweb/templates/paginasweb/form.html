@@ -1,4 +1,4 @@
-{% extends "paginasweb/indexcliente.html" %}
+{% extends "paginasweb/index.html" %}
 
 {% load static %}
 
@@ -16,6 +16,7 @@
       {% csrf_token %}
 
       {{ form|crispy }}
+
 
       <div class="text-center">
   <button type="submit" class="btn btn-quaternary mt-3">{{ botao }}</button>

@@ -16,7 +16,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
-
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -70,7 +70,7 @@ class IndexView(TemplateView):
 # Página inicial quando o cliente faz login
 
 class IndexClienteView(TemplateView):
-    template_name = 'paginasweb/indexcliente.html'
+    template_name = 'paginasweb/index.html'
 
 # Página "sobre"
 class SobreView(TemplateView):
@@ -106,14 +106,14 @@ class AdminView(TemplateView):
 
 # Views de cadastro (CreateView)
 
-class IndexClienteCreate(CreateView):
+class IndexClienteCreate(LoginRequiredMixin, CreateView):
      model: IndexCliente
      fields = ['descricao']
-     template_name = 'paginasweb/indexcliente.html'
-     success_url = reverse_lazy('indexcliente')
+     template_name = 'paginasweb/index.html'
+     success_url = reverse_lazy('index')
 
 
-class AdminCreate(CreateView):
+class AdminCreate(LoginRequiredMixin, CreateView):
      model = Admin
      fields = ['nome', 'email', 'senha']
      template_name = 'paginasweb/adminindex.html'
@@ -123,17 +123,17 @@ class AdminCreate(CreateView):
           'botao': 'Cadastrar'
      }
 
-class CadastroCreate(CreateView):
+class CadastroCreate(LoginRequiredMixin, CreateView):
      model = Cadastro
      fields = ['nome', 'email', 'senha']
      template_name = 'paginasweb/cadastro.html'
-     success_url = reverse_lazy('indexcliente')
+     success_url = reverse_lazy('index')
      extra_context = {
           'titulo': 'Cadastro de cliente',
           'botao': 'Cadastrar'
      }
 
-class TipoSensorCreate(CreateView):
+class TipoSensorCreate(LoginRequiredMixin, CreateView):
     model = TipoSensor
     fields = ['numero_serial', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -143,7 +143,7 @@ class TipoSensorCreate(CreateView):
         'botao': 'Cadastrar'
     }
 
-class ControladorCreate(CreateView):
+class ControladorCreate(LoginRequiredMixin, CreateView):
     model = Controlador
     fields = ['cadastro_cliente', 'nome', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -153,7 +153,7 @@ class ControladorCreate(CreateView):
         'botao': 'Cadastrar'
     }
 
-class SensorCreate(CreateView):
+class SensorCreate(LoginRequiredMixin, CreateView):
     model = Sensor
     fields = ['descricao', 'controlador', 'tipo_sensor']
     template_name = 'paginasweb/form.html'
@@ -164,7 +164,7 @@ class SensorCreate(CreateView):
     }
 
 
-class RegraCreate(CreateView):
+class RegraCreate(LoginRequiredMixin, CreateView):
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'tipo_sensor']
     template_name = 'paginasweb/form.html'
@@ -174,7 +174,7 @@ class RegraCreate(CreateView):
         'botao': 'Cadastrar'
     }
 
-class LeituraCreate(CreateView):
+class LeituraCreate(LoginRequiredMixin, CreateView):
     model = Leitura
     fields = ['tipo_sensor', 'valor', 'data', 'sensor', 'alerta']
     template_name = 'paginasweb/form.html'
@@ -186,7 +186,7 @@ class LeituraCreate(CreateView):
 
 ################################################################################
 
-class CadastroUpdate(UpdateView):
+class CadastroUpdate(LoginRequiredMixin, UpdateView):
      model = Cadastro
      fields = ['nome', 'email', 'senha']
      template_name = 'paginasweb/formadmin.html'
@@ -196,7 +196,7 @@ class CadastroUpdate(UpdateView):
           'botao': 'Cadastrar'
      }
 
-class TipoSensorUpdate(UpdateView):
+class TipoSensorUpdate(LoginRequiredMixin, UpdateView):
     model = TipoSensor
     fields = ['numero_serial', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -206,7 +206,7 @@ class TipoSensorUpdate(UpdateView):
         'botao': 'Cadastrar'
     }
 
-class ControladorUpdate(UpdateView):
+class ControladorUpdate(LoginRequiredMixin, UpdateView):
     model = Controlador
     fields = ['cadastro_cliente', 'nome', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -216,13 +216,13 @@ class ControladorUpdate(UpdateView):
     'botao': 'Cadastrar'
     }
 
-class SensorUpdate(UpdateView):
+class SensorUpdate(LoginRequiredMixin, UpdateView):
     model = Sensor
     fields = ['descricao', 'controlador', 'tipo_sensor']
     template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('index')
 
-class RegraUpdate(UpdateView):
+class RegraUpdate(LoginRequiredMixin, UpdateView):
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'tipo_sensor']
     template_name = 'paginasweb/form.html'
@@ -232,7 +232,7 @@ class RegraUpdate(UpdateView):
     'botao': 'Cadastrar'
     }
 
-class LeituraUpdate(UpdateView):
+class LeituraUpdate(LoginRequiredMixin, UpdateView):
     model = Leitura
     fields = ['tipo_sensor', 'valor', 'data', 'sensor', 'alerta']
     template_name = 'paginasweb/form.html'
@@ -244,7 +244,7 @@ class LeituraUpdate(UpdateView):
 
     ####################################################################################
 
-class CadastroDelete(DeleteView):
+class CadastroDelete(LoginRequiredMixin, DeleteView):
      model = Cadastro
      template_name = 'paginasweb/formadmin.html'
      success_url = reverse_lazy('adminindex')
@@ -253,7 +253,7 @@ class CadastroDelete(DeleteView):
           'botao': 'Excluir'
      }
 
-class TipoSensorDelete(DeleteView):
+class TipoSensorDelete(LoginRequiredMixin, DeleteView):
         model = TipoSensor
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -262,7 +262,7 @@ class TipoSensorDelete(DeleteView):
         'botao': 'Excluir'
         }
 
-class ControladorDelete(DeleteView):
+class ControladorDelete(LoginRequiredMixin, DeleteView):
         model = Controlador
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -271,7 +271,7 @@ class ControladorDelete(DeleteView):
         'botao': 'Excluir',
         }
 
-class SensorDelete(DeleteView):
+class SensorDelete(LoginRequiredMixin, DeleteView):
         model = Sensor
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -280,7 +280,7 @@ class SensorDelete(DeleteView):
         'botao': 'Excluir sensor'
         }
 
-class RegraDelete(DeleteView):
+class RegraDelete(LoginRequiredMixin, DeleteView):
         model = Regra
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -289,7 +289,7 @@ class RegraDelete(DeleteView):
         'botao': 'Excluir'
         }
 
-class LeituraDelete(DeleteView):
+class LeituraDelete(LoginRequiredMixin, DeleteView):
         model = Leitura
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -301,28 +301,28 @@ class LeituraDelete(DeleteView):
 
 ######################################################
 
-class TipoSensorView(ListView):
+class TipoSensorView(LoginRequiredMixin, ListView):
      model = TipoSensor
      template_name = 'paginasweb/tiposensor.html'
 
 
-class CadastroView(ListView):
+class CadastroView(LoginRequiredMixin, ListView):
      model = Cadastro
      template_name = 'paginasweb/clientescadastro.html'
 
-class ControladorView(ListView):
+class ControladorView(LoginRequiredMixin, ListView):
      model = Controlador
      template_name = 'paginasweb/controlador.html'
 
-class SensorView(ListView):
+class SensorView(LoginRequiredMixin, ListView):
      model = Sensor
      template_name = 'paginasweb/sensor.html'
 
-class RegraView(ListView):
+class RegraView(LoginRequiredMixin, ListView):
      model = Regra
      template_name = 'paginasweb/regra.html'
 
-class LeituraView(ListView):
+class LeituraView(LoginRequiredMixin, ListView):
      model = Leitura
      template_name = 'paginasweb/leitura.html'
 
