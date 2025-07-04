@@ -24,11 +24,8 @@
 
     {% if request.user.is_authenticated %}
 
-    <li><a href="{% url "cadastrar-tipo-sensor" %}">Tipo de Sensor</a></li>
     <li><a href="{% url "cadastrar-controlador" %}">Controlador</a></li>
-    <li><a href="{% url "cadastrar-sensor" %}">Sensor</a></li>
     <li><a href="{% url "cadastrar-regra" %}">Regra</a></li>
-    <li><a href="{% url "cadastrar-leitura" %}">Leitura</a></li>
     <li> <a href="{% url "senha" %}">Atualizar senha</a></li>
     <li> <a href="{% url "logout" %}">Logout</a></li>
 

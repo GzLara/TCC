@@ -67,9 +67,7 @@ class Regra(models.Model):
     )
     valor_minimo = models.FloatField()
     valor_maximo = models.FloatField()
-    tipo_sensor = models.ForeignKey(
-        TipoSensor, on_delete=models.PROTECT, null=True, blank=True
-    )
+    controlador = models.ForeignKey(Controlador, on_delete=models.PROTECT,  null=True, blank=True)
 
 
 class Leitura(models.Model):

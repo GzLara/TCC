@@ -166,7 +166,7 @@ class SensorCreate(LoginRequiredMixin, CreateView):
 
 class RegraCreate(LoginRequiredMixin, CreateView):
     model = Regra
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'tipo_sensor']
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
     template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-regra')
     extra_context = {
