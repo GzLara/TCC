@@ -21,44 +21,62 @@ from django.contrib.messages.views import SuccessMessageMixin
 
 API_SECRET_KEY = "Projeto1MC"
 
-@method_decorator(csrf_exempt, name='dispatch')  # Desativa CSRF para chamadas externas
+@method_decorator(csrf_exempt, name='dispatch')
 class LeituraCreateView(View):
-     def post(self, request):
-        # Verifica chave de API no header
+    def post(self, request):
         auth_header = request.headers.get("X-API-KEY")
         if auth_header != API_SECRET_KEY:
             return HttpResponseForbidden("Chave de API inválida")
 
         try:
             data_str = request.POST.get("data")
-            hora_str = request.POST.get("hora")
-            sensor_str = request.POST.get("sensor")
-            valor_str = request.POST.get("valor")
+            time_str = request.POST.get("time")
+            sensors_total_str = request.POST.get("sensors_total")
 
-            if not all([data_str, hora_str, sensor_str, valor_str]):
-                return HttpResponseBadRequest("Campos obrigatórios: data, hora, sensor, valor")
+            if not all([data_str, time_str, sensors_total_str]):
+                return HttpResponseBadRequest("Campos obrigatórios: data, time, sensors_total")
 
             data_parsed = parse_date(data_str)
-            hora_parsed = parse_time(hora_str)
-            if not data_parsed or not hora_parsed:
+            time_parsed = parse_time(time_str)
+            if not data_parsed or not time_parsed:
                 return HttpResponseBadRequest("Data ou hora inválida")
 
-            datahora = datetime.combine(data_parsed, hora_parsed)
+            datahora = datetime.combine(data_parsed, time_parsed)
             datahora_aware = make_aware(datahora)
 
             try:
-                valor = Decimal(valor_str)
-            except InvalidOperation:
-                return HttpResponseBadRequest("Valor inválido")
+                sensors_total = int(sensors_total_str)
+            except ValueError:
+                return HttpResponseBadRequest("sensors_total inválido")
 
-            # Certifique-se de que seu modelo Leitura tenha os campos: sensor (CharField) e valor (DecimalField)
-            leitura = Leitura.objects.create(
-                data=datahora_aware,
-                sensor=sensor_str,
-                valor=valor
-            )
+            leituras_criadas = []
+            for i in range(1, sensors_total + 1):
+                sensor_key = f"sensor_type{i}"
+                value_key = f"value{i}"
 
-            return JsonResponse({"status": "sucesso", "id": leitura.id})
+                sensor = request.POST.get(sensor_key)
+                value_str = request.POST.get(value_key)
+
+                if not sensor or not value_str:
+                    return HttpResponseBadRequest(f"Faltando dados para sensor {i}")
+
+                try:
+                    valor = Decimal(value_str)
+                except InvalidOperation:
+                    return HttpResponseBadRequest(f"Valor inválido para sensor {i}")
+
+                leitura = Leitura.objects.create(
+                    data=datahora_aware,
+                    sensor=sensor,
+                    valor=valor
+                )
+                leituras_criadas.append({
+                    "sensor": sensor,
+                    "valor": str(valor),
+                    "id": leitura.id
+                })
+
+            return JsonResponse({"status": "sucesso", "leituras": leituras_criadas})
 
         except Exception as e:
             return HttpResponseBadRequest(f"Erro inesperado: {str(e)}")
@@ -180,17 +198,6 @@ class RegraCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
         'botao': 'Cadastrar'
     }
     success_message = "Regra criada com sucesso!"
-
-class LeituraCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    model = Leitura
-    fields = ['tipo_sensor', 'valor', 'data', 'sensor', 'alerta']
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('listar-leitura')
-    extra_context = {
-    'titulo': 'Cadastro de leitura',
-    'botao': 'Cadastrar'
-    }
-    success_message = "Leitura criada com sucesso!"
 
 ################################################################################
 
