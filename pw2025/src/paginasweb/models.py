@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Todas as classes DEVEM ter a herança para a classe Model que está dentro de "models"
 # class SuaClasse(models.Model):
@@ -27,7 +28,8 @@ class Admin(models.Model):
     email = models.EmailField(max_length=255, verbose_name="E-mail")
     senha = models.CharField(max_length=255, verbose_name="Senha")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin')
+
     def __str__(self):
         return f"{self.nome}"
 
@@ -36,6 +38,7 @@ class Cadastro(models.Model):
     email = models.EmailField(max_length=255, verbose_name="E-mail")
     senha = models.CharField(max_length=255, verbose_name="Senha")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cadastro')
 
     def __str__(self):
         return f"{self.nome}"
