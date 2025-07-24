@@ -3,6 +3,13 @@
 
 {% block conteudo %}
 
+<script>
+  $(document).ready(function () {
+      $('.toast').toast('show');
+  });
+</script>
+
+
 <div class="d-flex justify-content-center align-items-center min-vh-100" style="gap: 65px;">
   <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 500px;">
     <h3 class="text-center mb-4 ">Login de Usuário</h3>
@@ -67,6 +74,28 @@
     </form>
   </div>
 </div>
+
+{% if messages %}
+  {% for m in messages %}
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="toast-header">
+        <img src="..." class="rounded me-2" alt="...">
+        <strong class="me-auto">Aviso</strong>
+        <small class="text-body-secondary">agora</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+      <div class="toast-body">
+        {{ m }}
+      </div>
+    </div>
+  {% endfor %}
+{% endif %}
+
+<script>
+  $(document).ready(function () {
+      $('.toast').toast('show');
+  });
+</script>
 
 
 {% endblock %}

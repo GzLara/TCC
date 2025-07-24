@@ -28,7 +28,7 @@ class Admin(models.Model):
     email = models.EmailField(max_length=255, verbose_name="E-mail")
     senha = models.CharField(max_length=255, verbose_name="Senha")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='admin')
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nome}"
@@ -38,7 +38,7 @@ class Cadastro(models.Model):
     email = models.EmailField(max_length=255, verbose_name="E-mail")
     senha = models.CharField(max_length=255, verbose_name="Senha")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, related_name='cadastro')
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.nome}"
