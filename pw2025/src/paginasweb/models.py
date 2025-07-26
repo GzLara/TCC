@@ -44,19 +44,11 @@ class Cadastro(models.Model):
         return f"{self.nome}"
     
 class Controlador(models.Model):
-    cadastro_cliente = models.ForeignKey(Cadastro, on_delete=models.PROTECT, null=True, blank=True)
     nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
 
     def __str__(self):
         return f"{self.nome}"
-
-
-class Sensor(models.Model):
-    descricao = models.CharField(max_length=255, verbose_name="Descrição")
-    controlador = models.ForeignKey(Controlador, on_delete=models.PROTECT)
-    tipo_sensor = models.ForeignKey(TipoSensor, on_delete=models.PROTECT)
-
 
 class Regra(models.Model):
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
@@ -74,11 +66,10 @@ class Regra(models.Model):
 
 
 class Leitura(models.Model):
-    tipo_sensor = models.ForeignKey(TipoSensor, on_delete=models.PROTECT)
     valor = models.FloatField()
     data = models.DateTimeField()
     temperatura = models.DecimalField(max_digits=5, decimal_places=2)
-    sensor = models.ForeignKey(Sensor, on_delete=models.PROTECT)
+    sensor = models.CharField(max_length=50)
     alerta = models.ForeignKey(
         Regra, on_delete=models.SET_NULL, null=True, blank=True
     )

@@ -17,6 +17,7 @@
 
 
     <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
 </head>
 <body>
@@ -42,11 +43,57 @@
 
 {% block conteudo %}
 
-    <h3>Olá galera de Programação Web!!</h3>
+       
 
-    <p>
-        HTML é muito legal!!!!
-    </p>
+    <h3 class="mt-3 mb-5 ms-3" >Olá, User! </h3> 
+    
+  <canvas id="grafico" width="500" height="150"></canvas>
+
+  <script>
+    const ctx = document.getElementById('grafico').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: [],
+            datasets: [
+                { label: 'Temperatura (°C)', data: [], borderColor: 'red', fill: false },
+                { label: 'Umidade (%)', data: [], borderColor: 'blue', fill: false }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { title: { display: true, text: 'Hora' } },
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    function atualizarGrafico() {
+      fetch('/api/grafico/')
+        .then(r => r.json())
+        .then(dados => {
+          // zera tudo antes de atualizar
+          chart.data.labels = [];
+
+          const sensores = Object.keys(dados);
+          sensores.forEach((sensor, idx) => {
+            const valores = dados[sensor];
+            if (idx === 0) {
+                chart.data.labels = valores.map(v => v.data); // usa o tempo como eixo X
+            }
+            chart.data.datasets[idx].label = sensor;
+            chart.data.datasets[idx].data = valores.map(v => v.valor);
+          });
+
+          chart.update();
+        });
+    }
+
+    // atualiza a cada 3 segundos
+    setInterval(atualizarGrafico, 3000);
+    atualizarGrafico();  //chama uma vez no inicio
+  </script>
 
     {% endblock %}
 

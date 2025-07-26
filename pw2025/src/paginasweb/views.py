@@ -1,7 +1,7 @@
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import TipoSensor, Controlador, Sensor, Regra, Leitura, Cadastro, Admin, IndexCliente
+from .models import Controlador, Regra, Leitura, Cadastro, Admin, IndexCliente
 from django.views import View
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils.decorators import method_decorator
@@ -18,6 +18,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from django.http import JsonResponse
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -76,11 +77,28 @@ class LeituraCreateView(View):
                     "id": leitura.id
                 })
 
-            return JsonResponse({"status": "sucesso", "leituras": leituras_criadas})
-
+                return JsonResponse({"status": "sucesso", "leituras": leituras_criadas})
+    
         except Exception as e:
             return HttpResponseBadRequest(f"Erro inesperado: {str(e)}")
-        
+    
+
+    
+def grafico_dados(request):
+    #ultimos 20 registros ordenados por data decrescente
+    leituras = Leitura.objects.order_by('-data')[:20]
+
+    #agrupa por tipo de sensor (ex: temperatura, umidade etc.)
+    dados = {}
+    for l in reversed(leituras):  #inverte para mostrar em ordem cronologica
+        if l.sensor not in dados:
+            dados[l.sensor] = []
+        dados[l.sensor].append({
+            "data": l.data.strftime("%H:%M:%S"),
+            "valor": float(l.valor)
+        })
+
+    return JsonResponse(dados)
 
 # Página inicial
 class IndexView(TemplateView):
@@ -95,10 +113,6 @@ class IndexClienteView(TemplateView):
 class SobreView(TemplateView):
     template_name = 'paginasweb/sobre.html'
 
-# Página "Tipo de Sensor"
-class TipoSensorView(TemplateView):
-    template_name = 'paginasweb/cadastrar/form.html'
-
 # Página "Cadastro"
 class CadastroView(TemplateView):
      template_name = 'paginasweb/cadastro.html'
@@ -107,17 +121,9 @@ class CadastroView(TemplateView):
 class ControladorView(TemplateView):
      template_name = 'paginasweb/cadastrar/form.html'
 
-#Página "Sensor"
-class SensorView(TemplateView):
-     template_name = 'paginasweb/cadastrar/form.html' 
-
 #Página "Regra"
 class RegraView(TemplateView):
      template_name = 'paginasweb/cadastrar/form.html'
-
-#Página "Leitura"
-class LeituraView(TemplateView):
-     template_name = 'paginasweb/cadastrar/form.html' 
 
 #Página "Admin"
 class AdminView(TemplateView):
@@ -154,17 +160,6 @@ class CadastroCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
      }
      success_message = "Cadastro feito com sucesso!"
 
-class TipoSensorCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    model = TipoSensor
-    fields = ['numero_serial', 'descricao']
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('listar-tipo-sensor')
-    extra_context = {
-        'titulo': 'Cadastro de tipo de sensor',
-        'botao': 'Cadastrar'
-    }
-    success_message = "Tipo de sensor criado com sucesso!"
-
 class ControladorCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = Controlador
     fields = ['cadastro_cliente', 'nome', 'descricao']
@@ -175,17 +170,6 @@ class ControladorCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
         'botao': 'Cadastrar'
     }
     success_message = "Controlador criado com sucesso!"
-
-class SensorCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    model = Sensor
-    fields = ['descricao', 'controlador', 'tipo_sensor']
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('listar-sensor')
-    extra_context = {
-        'titulo': 'Cadastro de sensor',
-        'botao': 'Cadastrar'
-    }
-    success_message = "Sensor criado com sucesso!"
 
 
 class RegraCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
@@ -212,17 +196,6 @@ class CadastroUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
      }
      success_message = "Cadastro atualizado com sucesso!"
 
-class TipoSensorUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    model = TipoSensor
-    fields = ['numero_serial', 'descricao']
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
-    extra_context = {
-        'titulo': 'Cadastro de tipo de sensor',
-        'botao': 'Cadastrar'
-    }
-    success_message = "Tipo de sensor atualizado com sucesso!"
-
 class ControladorUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = Controlador
     fields = ['cadastro_cliente', 'nome', 'descricao']
@@ -233,13 +206,6 @@ class ControladorUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     'botao': 'Cadastrar'
     }
     success_message = "Controlador atualizado com sucesso!"
-
-class SensorUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    model = Sensor
-    fields = ['descricao', 'controlador', 'tipo_sensor']
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
-    success_message = "Sensor atualizado com sucesso!"
 
 class RegraUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     model = Regra
@@ -275,16 +241,6 @@ class CadastroDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
      }
      success_message = "Cadastro deletado com sucesso!"
 
-class TipoSensorDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-        model = TipoSensor
-        template_name = 'paginasweb/form.html'
-        success_url = reverse_lazy('index')
-        extra_context = {
-        'titulo': 'Excluir tipo de sensor',
-        'botao': 'Excluir'
-        }
-        success_message = "Tipo de sensor deletado com sucesso!"
-
 class ControladorDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         model = Controlador
         template_name = 'paginasweb/form.html'
@@ -295,15 +251,6 @@ class ControladorDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         }
         success_message = "Controlador deletado com sucesso!"
 
-class SensorDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-        model = Sensor
-        template_name = 'paginasweb/form.html'
-        success_url = reverse_lazy('index')
-        extra_context = {
-        'titulo': 'Excluir sensor',
-        'botao': 'Excluir sensor'
-        }
-        success_message = "Sensor deletado com sucesso!"
 
 class RegraDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         model = Regra
@@ -328,10 +275,6 @@ class LeituraDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
 
 ######################################################
 
-class TipoSensorView(SuccessMessageMixin, LoginRequiredMixin, ListView):
-     model = TipoSensor
-     template_name = 'paginasweb/tiposensor.html'
-
 
 class CadastroView(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = Cadastro
@@ -340,10 +283,6 @@ class CadastroView(SuccessMessageMixin, LoginRequiredMixin, ListView):
 class ControladorView(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = Controlador
      template_name = 'paginasweb/controlador.html'
-
-class SensorView(SuccessMessageMixin, LoginRequiredMixin, ListView):
-     model = Sensor
-     template_name = 'paginasweb/sensor.html'
 
 class RegraView(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = Regra
