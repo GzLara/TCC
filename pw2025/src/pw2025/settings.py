@@ -142,6 +142,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #cONFIGURAÇOES DE LOGIN
 
-LOGIN_REDIRECT_URL = 'indexcliente'
+LOGIN_REDIRECT_URL = 'index'
 LOGIN_URL = 'cadastrar-cadastro'
-LOGOUT_REDIRECT_URL = 'indexcliente'
+LOGOUT_REDIRECT_URL = 'cadastrar-cadastro'

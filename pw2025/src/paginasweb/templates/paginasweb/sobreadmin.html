@@ -1,4 +1,4 @@
-{% extends "paginasweb/index.html" %}
+{% extends "paginasweb/adminindex.html" %}
 
 {% load static %}
 
@@ -22,6 +22,13 @@ Através de um sistema embarcado com conexão Wi-Fi, o dispositivo permite acomp
 <br>
 <h4> Diagrama de Casos de Uso (extra) </h4>
 <img src="{% static 'imgs/Diagramadecasos2.png' %}" >
+
+
+<div class="d-flex gap-1 justify-content-center">
+    <a href="{% url "editar-sobreadmin" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+    <a href="{% url "excluir-sobreadmin" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+</div>
+
 
 
 {% endblock %}

@@ -12,19 +12,61 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     {% block titulo %}
-    <title>Programação Web 2025</title>
+    <title>Página de Administrador</title>
     {% endblock titulo %}
 
 
     <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
+    <style>
+  ul.dropdown-menu.show {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    background-color: #58a4b0 !important;
+    color: white !important;
+}
+</style>
     
 </head>
 <body class="admin">
 
 
 <ul id="menuadmin">
-    <li><a href="{% url "listar-clientes-cadastro" %}">Listar Clientes</a></li>
+
+    {% if request.user.is_authenticated %}
+
+    <li><a href="{% url "adminindex" %}" class="seta-retorno">⭠</a></li>
+    <li class="dropdown">
+  <a class="dropdown-toggle dropdown-listagem" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Listar
+  </a>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url "listar-clientes-cadastro" %}">Clientes</a></li>
+    <li><a class="dropdown-item" href="{% url "controladores-completo" %}">Controladores</a></li>
+    <li><a class="dropdown-item" href="{% url "regras-completo" %}">Regras</a></li>
+  </ul>
+</li>
+    <li class="dropdown">
+  <a class="dropdown-toggle dropdown-adicionar" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Adicionar
+  </a>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url "cadastrar-controlador-admin" %}">Controladores</a></li>
+    <li><a class="dropdown-item" href="{% url "cadastrar-regra-admin" %}">Regras</a></li>
+  </ul>
+</li>
+    <li> <a href="{% url "senhaadmin" %}">Atualizar senha</a></li>
+    <li> <a href="{% url "logout" %}">Logout</a></li>
+    <li><a href="{% url "sobreadmin" %}">Sobre nós</a></li>
+
+    {% else %}
+    <li><a href="{% url "cadastrar-cadastro" %}" class="seta-retorno">⭠</a></li>
     <li><a href="{% url "sobre" %}">Sobre nós</a></li>
+    
+    {% endif %}
+
+    
+
 
 </ul>
 

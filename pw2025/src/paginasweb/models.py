@@ -32,6 +32,13 @@ class Admin(models.Model):
 
     def __str__(self):
         return f"{self.nome}"
+    
+class SobreAdmin(models.Model):
+    titulo = models.TextField(max_length=255, verbose_name="Título")
+    conteudo = models.TextField(verbose_name="Conteúdo")
+
+    def __str__(self):
+        return f"{self.titulo}"
 
 class Cadastro(models.Model):
     nome = models.CharField(max_length=30, verbose_name="Nome")
@@ -46,6 +53,15 @@ class Cadastro(models.Model):
 class Controlador(models.Model):
     nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
+    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.nome}"
+    
+class ControladorAdmin(models.Model):
+    nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
+    descricao = models.CharField(max_length=255, verbose_name="Descrição")
+    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
 
     def __str__(self):
         return f"{self.nome}"
@@ -60,10 +76,26 @@ class Regra(models.Model):
         max_length=10,
         verbose_name="Horário de Fim"
     )
-    valor_minimo = models.FloatField()
-    valor_maximo = models.FloatField()
-    controlador = models.ForeignKey(Controlador, on_delete=models.PROTECT,  null=True, blank=True)
+    valor_minimo = models.FloatField("Valor Mínimo")
+    valor_maximo = models.FloatField(verbose_name="Valor Máximo")
+    controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE, null=True, blank=True)
+    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
 
+
+class RegraAdmin(models.Model):
+    descricao = models.CharField(max_length=255, verbose_name="Descrição")
+    horario_inicio = models.CharField(
+        max_length=10,
+        verbose_name="Horário de Início"
+    )
+    horario_fim = models.CharField(
+        max_length=10,
+        verbose_name="Horário de Fim"
+    )
+    valor_minimo = models.FloatField("Valor Mínimo")
+    valor_maximo = models.FloatField(verbose_name="Valor Máximo")
+    controlador = models.ForeignKey(ControladorAdmin, on_delete=models.CASCADE, null=True, blank=True)
+    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
 
 class Leitura(models.Model):
     valor = models.FloatField()

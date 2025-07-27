@@ -12,12 +12,22 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     {% block titulo %}
-    <title>Programação Web 2025</title>
+    <title>Início</title>
     {% endblock titulo %}
 
 
     <link rel="stylesheet" href="{% static 'css/estilo.css' %}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+  ul.dropdown-menu.show {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    background-color: #EF233C !important;
+    color: white !important;
+}
+</style>
     
 </head>
 <body>
@@ -25,18 +35,31 @@
 
 <ul id="menu">
 
+
     {% if request.user.is_authenticated %}
 
+    <li><a href="{% url "index" %}" class="seta-retorno">⭠</a></li>
     <li><a href="{% url "cadastrar-controlador" %}">Controlador</a></li>
     <li><a href="{% url "cadastrar-regra" %}">Regra</a></li>
+    <li class="dropdown">
+  <a class="dropdown-toggle dropdown-listagem" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Listar
+  </a>
+  <ul class="dropdown-menu">
+    <li><a class="dropdown-item" href="{% url "listar-controlador" %}">Controladores</a></li>
+    <li><a class="dropdown-item" href="{% url "listar-regra" %}">Regras</a></li>
+  </ul>
+</li>
     <li> <a href="{% url "senha" %}">Atualizar senha</a></li>
     <li> <a href="{% url "logout" %}">Logout</a></li>
+  
 
     {% else %}
-    <li><a href="{% url "cadastrar-cadastro" %}">Login</a></li>
+    <li><a href="{% url "cadastrar-cadastro" %}" class="seta-retorno">⭠</a></li>
     {% endif %}
 
     <li><a href="{% url "sobre" %}">Sobre nós</a></li>
+    
 
 
 </ul>
@@ -44,7 +67,7 @@
 {% block conteudo %}
 
        
-
+    {% if request.user.is_authenticated %}
     <h3 class="mt-3 mb-5 ms-3" >Olá, User! </h3> 
     
   <canvas id="grafico" width="500" height="150"></canvas>
@@ -94,6 +117,10 @@
     setInterval(atualizarGrafico, 3000);
     atualizarGrafico();  //chama uma vez no inicio
   </script>
+
+  {% else %}
+  <li><a href="{% url "cadastrar-cadastro" %}">Login</a></li>
+  {% endif %}
 
     {% endblock %}
 
