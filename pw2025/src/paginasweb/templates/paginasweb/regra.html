@@ -7,7 +7,7 @@
     <title>Lista de Regras</title>
     {% endblock titulo %}
 
-<div class="d-flex justify-content-center align-items-center min-vh-100">
+<div class="d-flex justify-content-center align-items-center min-vh-100" style="margin-top: 40px;">
   <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 1000px; ">
     <h3 class="text-center mb-4">Lista de regras cadastradas</h3>
 
@@ -37,14 +37,36 @@
             <td>{{ obj.cadastrado_em }}</td>
             <td>
             <div class="d-flex gap-1 justify-content-center">
-              <a href="{% url 'editar-regra' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-regra' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <a href="{% url "editar-regra" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url "excluir-regra" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="5">Nenhum registro encontrado.</td>
+            <td colspan="8">Nenhum registro encontrado.</td>
+          </tr>
+          {% endfor %}
+
+        {% for admin in regras_admin %}
+          <tr>
+            <td>{{ admin.descricao }}</td>
+            <td>{{ admin.horario_inicio }}</td>
+            <td>{{ admin.horario_fim }}</td>
+            <td>{{ admin.valor_minimo }}</td>
+            <td>{{ admin.valor_maximo }}</td>
+            <td>{{ admin.controlador }}</td>
+            <td>{{ admin.cadastrado_em }}</td>
+            <td>
+            <div class="d-flex gap-1 justify-content-center">
+              <a href="{% url "editar-regra-admin" admin.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url "excluir-regra-admin" admin.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+            </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="8">Nenhum registro encontrado.</td>
           </tr>
           {% endfor %}
         </tbody>

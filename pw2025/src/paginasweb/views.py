@@ -400,6 +400,19 @@ class ControladorView(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = Controlador
      template_name = 'paginasweb/controlador.html'
 
+     def get_context_data(self, **kwargs):
+         context = super().get_context_data(**kwargs)
+
+         # Pega os dois conjuntos de controladores
+         controladores_admin = ControladorAdmin.objects.all()
+         listar_controlador = Controlador.objects.all()
+         
+         # Tabela vermelha: junta admin + clientes
+         context['object_list'] = list(listar_controlador) + list(controladores_admin)
+
+         return context
+
+
 class ControladorViewAdmin(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = ControladorAdmin
      template_name = 'paginasweb/controladorcadastro.html'
@@ -411,6 +424,11 @@ class RegraViewAdmin(SuccessMessageMixin, LoginRequiredMixin, ListView):
 class RegraView(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = Regra
      template_name = 'paginasweb/regra.html'
+
+     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['regras_admin'] = RegraAdmin.objects.all()  # regras do admin
+        return context
 
 class LeituraView(SuccessMessageMixin, LoginRequiredMixin, ListView):
      model = Leitura
