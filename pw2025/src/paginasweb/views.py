@@ -149,16 +149,16 @@ class IndexClienteCreate(LoginRequiredMixin, CreateView):
      success_url = reverse_lazy('index')
 
 
-#class AdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
-     #model = Admin
-    # fields = ['nome', 'email', 'senha']
-    # template_name = 'paginasweb/adminindex.html'
-    # success_url = reverse_lazy('adminindex')
-    # extra_context = {
-     #     'titulo': 'Cadastro de cliente',
-     #     'botao': 'Cadastrar'
-     #}
-     #success_message = "Cadastro de administrador feito com sucesso!"
+class AdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    model = Admin
+    fields = ['nome']
+    template_name = 'paginasweb/adminindex.html'
+    success_url = reverse_lazy('adminindex')
+    extra_context = {
+         'titulo': 'Cadastro de cliente',
+         'botao': 'Cadastrar'
+     }
+    success_message = "Cadastro de administrador feito com sucesso!"
 
 class SobreAdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     model = SobreViewAdmin
@@ -173,7 +173,7 @@ class SobreAdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
 
 class CadastroCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
      model = Cadastro
-     fields = ['nome', 'email', 'senha']
+     fields = ['nome']
      template_name = 'paginasweb/cadastro.html'
      success_url = reverse_lazy('index')
      extra_context = {
@@ -231,7 +231,7 @@ class RegraCreateAdmin(SuccessMessageMixin, LoginRequiredMixin, CreateView):
 
 class AdminUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
      model = Admin
-     fields = ['nome', 'email', 'senha']
+     fields = ['nome']
      template_name = 'paginasweb/formlogin.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {
@@ -242,7 +242,7 @@ class AdminUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
 
 class CadastroUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
      model = Cadastro
-     fields = ['nome', 'email', 'senha']
+     fields = ['nome']
      template_name = 'paginasweb/formlogin.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {

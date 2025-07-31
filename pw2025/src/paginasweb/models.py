@@ -25,10 +25,8 @@ class TipoSensor(models.Model):
     
 class Admin(models.Model):
     nome = models.CharField(max_length=30, verbose_name="Nome")
-    email = models.EmailField(max_length=255, verbose_name="E-mail")
-    senha = models.CharField(max_length=255, verbose_name="Senha")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='admin')
 
     def __str__(self):
         return f"{self.nome}"
@@ -42,10 +40,8 @@ class SobreAdmin(models.Model):
 
 class Cadastro(models.Model):
     nome = models.CharField(max_length=30, verbose_name="Nome")
-    email = models.EmailField(max_length=255, verbose_name="E-mail")
-    senha = models.CharField(max_length=255, verbose_name="Senha")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
+    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cadastro')
 
     def __str__(self):
         return f"{self.nome}"
