@@ -9,16 +9,41 @@ body{
 #menu{
     list-style: none;
     padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin: 0;
     background-color: #EF233C;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+   
 }
 
-#menu li{
-    display: inline;
-    margin-right: 10px;
+.menu-centro, .menu-centro-admin {
+  align-items: center;
+  display: flex;
+  margin: 0 auto; /* centraliza horizontalmente */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 20px;
 }
+
+.menu-fora, .menu-fora-admin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 20px
+}
+
+
+#menu li{
+    display: flex;
+    margin-right: 10px;
+    align-items: center;
+}
+
 #menu li a{
     text-decoration: none;
     color: #ffffff;

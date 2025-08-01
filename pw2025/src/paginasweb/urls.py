@@ -61,6 +61,7 @@ urlpatterns = [
     path('cadastrar/regra/', RegraCreate.as_view(), name='cadastrar-regra'),
     path('cadastrar/cadastro/', CadastroCreate.as_view(), name='cadastrar-cadastro'),
     path('cadastrar/sobreadmin/', SobreAdminCreate.as_view(), name='cadastrar-sobreadmin'),
+    path('registrar/', UsuarioCreate.as_view(), name='registrar'),
 
     path('editar/controladoradmin/<int:pk>/', ControladorUpdateAdmin.as_view(), name='editar-controlador-admin'),
     path('editar/regraadmin/<int:pk>/', RegraUpdateAdmin.as_view(), name='editar-regra-admin'),
@@ -76,11 +77,11 @@ urlpatterns = [
     path('excluir/cadastro/<int:pk>/', CadastroDelete.as_view(), name='excluir-cadastro'),
     path('excluir/sobreadmin/<int:pk>/', SobreAdminDelete.as_view(), name='excluir-sobreadmin'),
 
-    path("listar/controladoradmin/", ControladorViewAdmin.as_view(), name="listar-controlador-admin"),
-    path("listar/regraadmin/", RegraViewAdmin.as_view(), name="listar-regra-admin"),
-    path("listar/controlador/", ControladorView.as_view(), name="listar-controlador"),
-    path("listar/regra/", RegraView.as_view(), name="listar-regra"),
-    path("listar/cadastro/", CadastroView.as_view(), name="listar-clientes-cadastro"),
+    path("listar/controladoradmin/", ControladorListViewAdmin.as_view(), name="listar-controlador-admin"),
+    path("listar/regraadmin/", RegraListViewAdmin.as_view(), name="listar-regra-admin"),
+    path("listar/controlador/", ControladorListView.as_view(), name="listar-controlador"),
+    path("listar/regra/", RegraListView.as_view(), name="listar-regra"),
+    path("listar/cadastro/", CadastroListView.as_view(), name="listar-clientes-cadastro"),
     
     
 

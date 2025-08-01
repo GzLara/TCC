@@ -50,6 +50,7 @@ class Controlador(models.Model):
     nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.nome}"
@@ -58,6 +59,7 @@ class ControladorAdmin(models.Model):
     nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default=2)
 
     def __str__(self):
         return f"{self.nome}"
@@ -76,6 +78,7 @@ class Regra(models.Model):
     valor_maximo = models.FloatField(verbose_name="Valor Máximo")
     controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE, null=True, blank=True)
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default= 0)
 
 
 class RegraAdmin(models.Model):
@@ -92,6 +95,7 @@ class RegraAdmin(models.Model):
     valor_maximo = models.FloatField(verbose_name="Valor Máximo")
     controlador = models.ForeignKey(ControladorAdmin, on_delete=models.CASCADE, null=True, blank=True)
     cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default= 0)
 
 class Leitura(models.Model):
     valor = models.FloatField()

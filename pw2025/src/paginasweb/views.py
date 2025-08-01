@@ -13,11 +13,15 @@ from decimal import Decimal, InvalidOperation
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
 from django.shortcuts import redirect
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.messages.views import SuccessMessageMixin
+from braces.views import GroupRequiredMixin
+from django.shortcuts import get_object_or_404
+from .forms import UsuarioForm
+
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -129,27 +133,54 @@ class RegraView(TemplateView):
      template_name = 'paginasweb/cadastrar/form.html'
 
 #Página "Controlador" do Admin
-class ControladorViewAdmin(TemplateView):
+class ControladorViewAdmin(GroupRequiredMixin, TemplateView):
+     group_required = u"Administrador"
      template_name = 'paginasweb/cadastrar/formadminsenha.html'
 
 #Página "Regra" do Admin
-class RegraViewAdmin(TemplateView):
+class RegraViewAdmin(GroupRequiredMixin, TemplateView):
+     group_required = u"Administrador"
      template_name = 'paginasweb/cadastrar/formadminsenha.html'
 
 #Página "Admin"
-class AdminView(TemplateView):
+class AdminView(GroupRequiredMixin, TemplateView):
+     group_required = u"Administrador"
      template_name = 'paginasweb/adminindex.html'
 
 # Views de cadastro (CreateView)
 
-class IndexClienteCreate(LoginRequiredMixin, CreateView):
+class IndexClienteCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
+     group_required = [u"Administrador", u"Usuário"]
      model: IndexCliente
      fields = ['descricao']
      template_name = 'paginasweb/index.html'
      success_url = reverse_lazy('index')
 
 
-class AdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class UsuarioCreate(SuccessMessageMixin, CreateView):
+    template_name = 'paginasweb/form.html'     
+    form_class = UsuarioForm
+    success_url = reverse_lazy('cadastrar-cadastro')
+    extra_context = {
+        'titulo': 'Cadastro de Usuário',
+        'botao': 'Cadastrar'
+    }
+    success_message = "Cadastro criado com sucesso!"
+
+    def form_valid(self, form):
+
+        grupo = get_object_or_404(Group, name='Usuário')
+
+        url = super().form_valid(form)  
+
+        self.object.groups.add(grupo)  # Adiciona o usuário ao grupo "Usuário"
+        self.object.save()  # Salva o objeto para garantir que as alterações sejam persistidas
+
+        return url
+
+
+class AdminCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = u"Administrador"
     model = Admin
     fields = ['nome']
     template_name = 'paginasweb/adminindex.html'
@@ -160,7 +191,8 @@ class AdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
      }
     success_message = "Cadastro de administrador feito com sucesso!"
 
-class SobreAdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class SobreAdminCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = u"Administrador"
     model = SobreViewAdmin
     fields = ['titulo', 'conteudo']
     template_name = 'paginasweb/sobreadmin.html'
@@ -171,7 +203,8 @@ class SobreAdminCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     }
     success_message = "Sobre criado com sucesso!"
 
-class CadastroCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+class CadastroCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+     group_required = [u"Administrador", u"Usuário"]
      model = Cadastro
      fields = ['nome']
      template_name = 'paginasweb/cadastro.html'
@@ -182,7 +215,19 @@ class CadastroCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
      }
      success_message = "Cadastro feito com sucesso!"
 
-class ControladorCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+     def form_valid(self, form):
+
+        # Antes do super n foi criado o objeto nem salvo no banco
+        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
+
+        url = super().form_valid(form)
+        
+        # Depois do super, o objeto foi criado
+
+        return url
+
+class ControladorCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = [u"Administrador", u"Usuário"]
     model = Controlador
     fields = ['nome', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -193,9 +238,22 @@ class ControladorCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     }
     success_message = "Controlador criado com sucesso!"
 
-class ControladorCreateAdmin(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+
+    def form_valid(self, form):
+
+        # Antes do super n foi criado o objeto nem salvo no banco
+        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
+
+        url = super().form_valid(form)
+        
+        # Depois do super, o objeto foi criado
+
+        return url
+
+class ControladorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = u"Administrador"
     model = ControladorAdmin
-    fields = ['nome', 'descricao']
+    fields = ['nome', 'descricao', 'usuario']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('controladores-completo')
     extra_context = {
@@ -204,8 +262,20 @@ class ControladorCreateAdmin(SuccessMessageMixin, LoginRequiredMixin, CreateView
     }
     success_message = "Controlador criado com sucesso!"
 
+    def form_valid(self, form):
 
-class RegraCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+        # Antes do super n foi criado o objeto nem salvo no banco
+        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
+
+        url = super().form_valid(form)
+        
+        # Depois do super, o objeto foi criado
+
+        return url
+
+
+class RegraCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = [u"Administrador", u"Usuário"]
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
     template_name = 'paginasweb/form.html'
@@ -216,9 +286,22 @@ class RegraCreate(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     }
     success_message = "Regra criada com sucesso!"
 
-class RegraCreateAdmin(SuccessMessageMixin, LoginRequiredMixin, CreateView):
+
+    def form_valid(self, form):
+
+        # Antes do super n foi criado o objeto nem salvo no banco
+        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
+
+        url = super().form_valid(form)
+        
+        # Depois do super, o objeto foi criado
+
+        return url
+
+class RegraCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = u"Administrador"
     model = RegraAdmin
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador', 'usuario']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('regras-completo')
     extra_context = {
@@ -227,9 +310,21 @@ class RegraCreateAdmin(SuccessMessageMixin, LoginRequiredMixin, CreateView):
     }
     success_message = "Regra criada com sucesso!"
 
+    def form_valid(self, form):
+
+        # Antes do super n foi criado o objeto nem salvo no banco
+        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
+
+        url = super().form_valid(form)
+        
+        # Depois do super, o objeto foi criado
+
+        return url
+
 ################################################################################
 
-class AdminUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+class AdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+     group_required = u"Administrador"
      model = Admin
      fields = ['nome']
      template_name = 'paginasweb/formlogin.html'
@@ -240,7 +335,12 @@ class AdminUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
      }
      success_message = "Administrador atualizado com sucesso!"
 
-class CadastroUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+     def get_object(self, queryset=None):
+          self.object = get_object_or_404(Admin, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
+
+class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+     group_required = [u"Administrador", u"Usuário"]
      model = Cadastro
      fields = ['nome']
      template_name = 'paginasweb/formlogin.html'
@@ -251,7 +351,13 @@ class CadastroUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
      }
      success_message = "Cadastro atualizado com sucesso!"
 
-class ControladorUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+     def get_object(self, queryset=None):
+          self.object = get_object_or_404(Cadastro, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = [u"Administrador", u"Usuário"]
     model = Controlador
     fields = ['nome', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -262,9 +368,15 @@ class ControladorUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     }
     success_message = "Controlador atualizado com sucesso!"
 
-class ControladorUpdateAdmin(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    def get_object(self, queryset=None):
+          self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = u"Administrador"
     model = ControladorAdmin
-    fields = ['nome', 'descricao']
+    fields = ['nome', 'descricao', 'usuario']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('adminindex')
     extra_context = {
@@ -273,7 +385,12 @@ class ControladorUpdateAdmin(SuccessMessageMixin, LoginRequiredMixin, UpdateView
     }
     success_message = "Controlador atualizado com sucesso!"
 
-class RegraUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    def get_object(self, queryset=None):
+          self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
+
+class RegraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = [u"Administrador", u"Usuário"]
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
     template_name = 'paginasweb/form.html'
@@ -284,9 +401,15 @@ class RegraUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     }
     success_message = "Regra atualizada com sucesso!"
 
-class RegraUpdateAdmin(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    def get_object(self, queryset=None):
+          self.object = get_object_or_404(Regra, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class RegraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = u"Administrador"
     model = RegraAdmin
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador', 'admin']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('adminindex')
     extra_context = {
@@ -295,7 +418,12 @@ class RegraUpdateAdmin(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     }
     success_message = "Regra atualizada com sucesso!"
 
-class LeituraUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    def get_object(self, queryset=None):
+          self.object =get_object_or_404(RegraAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
+
+class LeituraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = u"Administrador"
     model = Leitura
     fields = ['tipo_sensor', 'valor', 'data', 'sensor', 'alerta']
     template_name = 'paginasweb/form.html'
@@ -306,7 +434,12 @@ class LeituraUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     }
     success_message = "Leitura atualizada com sucesso!"
 
-class SobreAdminUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    def get_object(self, queryset=None):
+          self.object = get_object_or_404(Leitura, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
+
+class SobreAdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = u"Administrador"
     model = SobreAdmin
     fields = ['titulo', 'conteudo']
     template_name = 'paginasweb/formadminsenha.html'
@@ -316,9 +449,14 @@ class SobreAdminUpdate(SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     }
     success_message = "Sobre atualizado com sucesso!"
 
+    def get_object(self, queryset=None):
+          self.object = get_object_or_404(SobreAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
+
     ####################################################################################
 
-class CadastroDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+class CadastroDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+     group_required = [u"Administrador", u"Usuário"]
      model = Cadastro
      template_name = 'paginasweb/formadminsenha.html'
      success_url = reverse_lazy('adminindex')
@@ -328,7 +466,13 @@ class CadastroDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
      }
      success_message = "Cadastro deletado com sucesso!"
 
-class ControladorDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+     def get_object(self, queryset=None):
+          self.object = get_object_or_404(Cadastro, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class ControladorDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        group_required = [u"Administrador", u"Usuário"]
         model = Controlador
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -338,7 +482,13 @@ class ControladorDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         }
         success_message = "Controlador deletado com sucesso!"
 
-class ControladorDeleteAdmin(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        def get_object(self, queryset=None):
+          self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class ControladorDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        group_required = u"Administrador"
         model = ControladorAdmin
         template_name = 'paginasweb/formadminsenha.html'
         success_url = reverse_lazy('adminindex')
@@ -348,7 +498,12 @@ class ControladorDeleteAdmin(SuccessMessageMixin, LoginRequiredMixin, DeleteView
         }
         success_message = "Controlador deletado com sucesso!"
 
-class RegraDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        def get_object(self, queryset=None):
+          self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object 
+          
+class RegraDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        group_required = [u"Administrador", u"Usuário"]
         model = Regra
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -358,7 +513,13 @@ class RegraDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         }
         success_message = "Regra deletada com sucesso!"
 
-class RegraDeleteAdmin(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        def get_object(self, queryset=None):
+          self.object = get_object_or_404(Regra, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class RegraDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        group_required = u"Administrador"
         model = RegraAdmin
         template_name = 'paginasweb/formadminsenha.html'
         success_url = reverse_lazy('adminindex')
@@ -368,7 +529,13 @@ class RegraDeleteAdmin(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         }
         success_message = "Regra deletada com sucesso!"
 
-class LeituraDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        def get_object(self, queryset=None):
+          self.object = get_object_or_404(RegraAdmin, pk=self.kwargs['pk'])
+          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+            return self.object
+
+class LeituraDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        group_required = u"Administrador"
         model = Leitura
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
@@ -378,7 +545,12 @@ class LeituraDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
             }
         success_message = "Leitura deletada com sucesso!"
 
-class SobreAdminDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+        def get_object(self, queryset=None):
+          self.object = get_object_or_404(Leitura, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
+
+class SobreAdminDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+    group_required = u"Administrador"
     model = SobreAdmin
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('sobreadmin')
@@ -387,16 +559,22 @@ class SobreAdminDelete(SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         'botao': 'Excluir'
     }
     success_message = "Sobre deletado com sucesso!"
+
+    def get_object(self, queryset=None):
+          self.object = get_object_or_404(SobreAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+          return self.object
         
 
 ######################################################
 
 
-class CadastroView(SuccessMessageMixin, LoginRequiredMixin, ListView):
+class CadastroListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+     group_required = [u"Administrador", u"Usuário"]
      model = Cadastro
      template_name = 'paginasweb/clientescadastro.html'
 
-class ControladorView(SuccessMessageMixin, LoginRequiredMixin, ListView):
+class ControladorListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+     group_required = [u"Administrador", u"Usuário"]
      model = Controlador
      template_name = 'paginasweb/controlador.html'
 
@@ -413,15 +591,18 @@ class ControladorView(SuccessMessageMixin, LoginRequiredMixin, ListView):
          return context
 
 
-class ControladorViewAdmin(SuccessMessageMixin, LoginRequiredMixin, ListView):
+class ControladorListViewAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+     group_required = u"Administrador"
      model = ControladorAdmin
      template_name = 'paginasweb/controladorcadastro.html'
 
-class RegraViewAdmin(SuccessMessageMixin, LoginRequiredMixin, ListView):
+class RegraListViewAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+     group_required = u"Administrador"
      model = RegraAdmin
      template_name = 'paginasweb/regracadastro.html'
 
-class RegraView(SuccessMessageMixin, LoginRequiredMixin, ListView):
+class RegraListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+     group_required = [u"Administrador", u"Usuário"]
      model = Regra
      template_name = 'paginasweb/regra.html'
 
@@ -430,7 +611,8 @@ class RegraView(SuccessMessageMixin, LoginRequiredMixin, ListView):
         context['regras_admin'] = RegraAdmin.objects.all()  # regras do admin
         return context
 
-class LeituraView(SuccessMessageMixin, LoginRequiredMixin, ListView):
+class LeituraListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+     group_required = u"Administrador"
      model = Leitura
      template_name = 'paginasweb/leitura.html'
 
@@ -447,7 +629,8 @@ def redirecionar_para_login(request):
 
 #unir tabelas de controlador e regra do admin com cliente
     
-class ControladorAdminComClienteView(LoginRequiredMixin, TemplateView):
+class ControladorAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    group_required = u"Administrador"
     template_name = 'paginasweb/controladorcadastro_completo.html'
 
     def get_context_data(self, **kwargs):
@@ -456,7 +639,8 @@ class ControladorAdminComClienteView(LoginRequiredMixin, TemplateView):
         context['listar_controlador'] = Controlador.objects.all()
         return context
 
-class RegraAdminComClienteView(LoginRequiredMixin, TemplateView):
+class RegraAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
+    group_required = u"Administrador", u""
     template_name = 'paginasweb/regrascadastro_completo.html'
 
     def get_context_data(self, **kwargs):

@@ -9,8 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+
+
     {% block titulo %}
     <title>Início</title>
     {% endblock titulo %}
@@ -20,13 +23,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-  ul.dropdown-menu.show {
+
+  div.dropdown-menu.show {
     border: none !important;
     border-radius: 12px !important;
     box-shadow: none !important;
     background-color: #EF233C !important;
     color: white !important;
-}
+
+  }
+
+  div.dropdown-menu {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: none !important;
+    background-color: #EF233C !important;
+    color: white !important;
+    transition: none !important;
+    outline: none !important;
+    background-color: transparent !important;
+    
+  }
+
+  
+
 </style>
     
 </head>
@@ -38,37 +58,62 @@
 
     {% if request.user.is_authenticated %}
 
+    <div class="menu-centro">
     <li><a href="{% url "index" %}" class="seta-retorno">⭠</a></li>
     <li><a href="{% url "cadastrar-controlador" %}">Controlador</a></li>
     <li><a href="{% url "cadastrar-regra" %}">Regra</a></li>
-    <li class="dropdown">
-  <a class="dropdown-toggle dropdown-listagem" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Listar
-  </a>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{% url "listar-controlador" %}">Controladores</a></li>
-    <li><a class="dropdown-item" href="{% url "listar-regra" %}">Regras</a></li>
-  </ul>
-</li>
-    <li> <a href="{% url "senha" %}">Atualizar senha</a></li>
-    <li> <a href="{% url "logout" %}">Logout</a></li>
+    <li class="nav-item menu-dropdown">
+      <a class="nav-link dropdown-toggle text-white" id="navbarDropdownMenu1" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <span id="username">Listar</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenu">
+          <a class="dropdown-item" href="{% url "listar-controlador" %}">
+        Controladores</a>
+  
+         <a class="dropdown-item" href="{% url "listar-regra" %}">
+        Regras</a>
+        </div>
+      </li>
+      <li><a href="{% url "sobre" %}">Sobre nós</a></li>
+      </div>
+     
+
+      <li class="nav-item menu-dropdown ms-auto" style="margin-left: auto;">
+      <a class="nav-link dropdown-toggle text-white" id="navbarDropdownMenu" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-person-circle" style="margin-right: 3px; "></i>
+        <span id="username">{{ request.user }}</span>
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdownMenu">
+          <a class="dropdown-item" href="#">
+          <i class="bi bi-person-badge-fill"></i>
+        Meus Dados</a>
+         <a class="dropdown-item" href="{% url "senha" %}">
+         <i class="bi bi-lock-fill"></i>
+        Alterar Senha</a>
+        <div class="dropdown-divider"></div>
+           <a class="dropdown-item" href="{% url "logout" %}">
+          <i class="bi bi-box-arrow-left"> </i>
+        Sair</a>
+        </div>
+      </li>
+      
   
 
     {% else %}
+    <div class="menu-fora"> 
     <li><a href="{% url "cadastrar-cadastro" %}" class="seta-retorno">⭠</a></li>
+    <li><a href="{% url "sobre" %}">Sobre nós</a></li>
+    </div>
     {% endif %}
 
-    <li><a href="{% url "sobre" %}">Sobre nós</a></li>
     
-
-
 </ul>
 
 {% block conteudo %}
 
        
     {% if request.user.is_authenticated %}
-    <h3 class="mt-3 mb-5 ms-3" >Olá, User! </h3> 
+    <h3 class="mt-3 mb-5 ms-3" >Olá, {{ request.user }}! </h3> 
     
   <canvas id="grafico" width="500" height="150"></canvas>
 

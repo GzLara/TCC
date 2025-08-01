@@ -7,6 +7,17 @@
 {% block conteudo %}
 <div class="container d-flex justify-content-center align-items-center" style="min-height: 80vh;">
   <div class="card p-4 shadow" style="width: 100%; max-width: 500px;">
+
+    {% if request.user.is_authenticated %}
+    <h3> Ação não permitida. </h3>
+    <br>
+    <p class="lead">
+      <strong>Houve algum problema para processar a ação desejada ou você não tem permissão para acessar esta página.</strong>
+    </p>
+
+    {% else %}
+
+
     <h3 class="text-center mb-4">{{ titulo }}</h3>
 
     <p>* Campos obrigatórios</p>
@@ -18,7 +29,7 @@
       {{ form|crispy }}
       <div class="d-flex justify-content-end align-items-center mt-3">
           <span class="me-1 small">Não possui conta?</span>
-          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'index' %}" role="button">Cadastrar-se</a>
+          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'registrar' %}" role="button">Cadastrar-se</a>
         </div>
 
 
@@ -26,6 +37,9 @@
   <button type="submit" class="btn btn-quaternary mt-3">{{ botao }}</button>
       </div>
     </form>
+
+    {% endif %}
+    
   </div>
 </div>
 

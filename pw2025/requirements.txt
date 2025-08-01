@@ -4,3 +4,4 @@ django-cleanup==8.1.0
 django-crispy-forms==1.13.0
 pytz==2025.2
 sqlparse==0.4.4
+crispy-bootstrap5
