@@ -21,7 +21,8 @@ from django.contrib.messages.views import SuccessMessageMixin
 from braces.views import GroupRequiredMixin
 from django.shortcuts import get_object_or_404
 from .forms import UsuarioForm
-
+from django.contrib.auth.views import LoginView
+from django.core.exceptions import PermissionDenied
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -148,6 +149,18 @@ class AdminView(GroupRequiredMixin, TemplateView):
      template_name = 'paginasweb/adminindex.html'
 
 # Views de cadastro (CreateView)
+
+
+
+class CustomLoginView(LoginView):
+    template_name = 'formlogin.html'
+
+    def get_success_url(self):
+        if self.request.user.is_superuser:
+            return reverse_lazy('adminindex')
+        else:
+            return reverse_lazy('index')
+
 
 class IndexClienteCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
      group_required = [u"Administrador", u"Usuário"]
@@ -386,8 +399,15 @@ class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
     success_message = "Controlador atualizado com sucesso!"
 
     def get_object(self, queryset=None):
-          self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object
+     self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'])
+     if self.object.usuario != self.request.user:
+        raise PermissionDenied("Você não tem permissão para acessar este objeto.")
+     return self.object
+
+    # def get_object(self, queryset=None):
+    #       self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+    #       return self.object
+    
 
 class RegraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = [u"Administrador", u"Usuário"]
@@ -419,8 +439,10 @@ class RegraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
     success_message = "Regra atualizada com sucesso!"
 
     def get_object(self, queryset=None):
-          self.object =get_object_or_404(RegraAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object
+         self.object = get_object_or_404(RegraAdmin, pk=self.kwargs['pk'])
+         if self.object.usuario != self.request.user:
+          raise PermissionDenied("Você não tem permissão para acessar este objeto.")
+         return self.object
 
 class LeituraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = u"Administrador"
@@ -498,9 +520,16 @@ class ControladorDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
         }
         success_message = "Controlador deletado com sucesso!"
 
+
         def get_object(self, queryset=None):
-          self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object 
+         self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'])
+         if self.object.usuario != self.request.user:
+          raise PermissionDenied("Você não tem permissão para acessar este objeto.")
+         return self.object
+
+        # def get_object(self, queryset=None):
+        #   self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+        #   return self.object 
           
 class RegraDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         group_required = [u"Administrador", u"Usuário"]
@@ -530,9 +559,10 @@ class RegraDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
         success_message = "Regra deletada com sucesso!"
 
         def get_object(self, queryset=None):
-          self.object = get_object_or_404(RegraAdmin, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
-            return self.object
+         self.object = get_object_or_404(RegraAdmin, pk=self.kwargs['pk'])
+         if self.object.usuario != self.request.user:
+          raise PermissionDenied("Você não tem permissão para acessar este objeto.")
+         return self.object
 
 class LeituraDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         group_required = u"Administrador"

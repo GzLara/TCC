@@ -27,8 +27,6 @@
     color: white !important;
 }
 
-
-
 </style>
     
 </head>
@@ -97,10 +95,11 @@
 
 {% block conteudo %}
 
-    <h3>Olá galera de Programação Web!!</h3>
+
+    <h3>Olá, {{ request.user }}! </h3>
 
     <p>
-        HTML é muito legal!!!!
+        teste
     </p>
 
     {% endblock %}

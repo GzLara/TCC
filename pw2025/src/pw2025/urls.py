@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from paginasweb.views import CustomLoginView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
 
     # Inclui todas as urls criadas lá no app paginasweb
     path('', include('paginasweb.urls')),
+    path('login/', CustomLoginView.as_view(), name='login'),
 ]

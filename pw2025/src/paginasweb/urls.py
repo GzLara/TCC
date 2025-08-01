@@ -11,13 +11,13 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
 
     # Criar rota para página de login
-   path('cadastrar/cadastro/', auth_views.LoginView.as_view(
+    path('cadastrar/cadastro/', CustomLoginView.as_view(
        template_name = 'paginasweb/formlogin.html',
        extra_context = {
           'titulo': 'Login',
           'botao': 'Entrar',
      }
-   ), name='cadastro'),
+   ), name='cadastrar'),
 
    path('senha/', auth_views.PasswordChangeView.as_view(
        template_name = 'paginasweb/form.html',

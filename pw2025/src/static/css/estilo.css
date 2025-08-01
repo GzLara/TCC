@@ -19,6 +19,13 @@ body{
    
 }
 
+
+#menuadmin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .menu-centro, .menu-centro-admin {
   align-items: center;
   display: flex;
