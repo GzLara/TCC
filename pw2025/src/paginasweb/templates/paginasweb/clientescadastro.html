@@ -17,7 +17,6 @@
           <tr>
             <th style="background-color: #58a4b0; color: white;">Nome</th>
             <th style="background-color: #58a4b0; color: white;">Email</th>
-            <th style="background-color: #58a4b0; color: white;">Senha</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
             <th style="background-color: #58a4b0; color: white;">Opções</th>
           </tr>
@@ -25,10 +24,9 @@
         <tbody>
           {% for obj in object_list %}
           <tr>
-            <td>{{ obj.nome }}</td>
+            <td>{{ obj.username }}</td>
             <td>{{ obj.email }}</td>
-            <td>{{ obj.senha }}</td>
-            <td>{{ obj.cadastrado_em }}</td>
+            <td>{{ obj.date_joined }}</td>
             <td>
               <a href="{% url 'editar-cadastro' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
               <a href="{% url 'excluir-cadastro' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>

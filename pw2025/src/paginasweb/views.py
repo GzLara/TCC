@@ -354,8 +354,8 @@ class AdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, U
 
 class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
      group_required = [u"Administrador", u"Usuário"]
-     model = Cadastro
-     fields = ['nome']
+     model = User
+     fields = ['username', 'email']
      template_name = 'paginasweb/formlogin.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {
@@ -365,9 +365,10 @@ class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin
      success_message = "Cadastro atualizado com sucesso!"
 
      def get_object(self, queryset=None):
-          self.object = get_object_or_404(Cadastro, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+          self.object = get_object_or_404(User, pk=self.kwargs['pk'])
+          if self.object == self.request.user or self.request.user.is_superuser:
             return self.object
+        
 
 class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = [u"Administrador", u"Usuário"]
@@ -479,7 +480,7 @@ class SobreAdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
 
 class CadastroDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
      group_required = [u"Administrador", u"Usuário"]
-     model = Cadastro
+     model = User
      template_name = 'paginasweb/formadminsenha.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {
@@ -489,8 +490,8 @@ class CadastroDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin
      success_message = "Cadastro deletado com sucesso!"
 
      def get_object(self, queryset=None):
-          self.object = get_object_or_404(Cadastro, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+          self.object = get_object_or_404(User, pk=self.kwargs['pk'])
+          if self.object == self.request.user or self.request.user.is_superuser:
             return self.object
 
 class ControladorDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
@@ -600,7 +601,7 @@ class SobreAdminDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
 
 class CadastroListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
      group_required = [u"Administrador", u"Usuário"]
-     model = Cadastro
+     model = User
      template_name = 'paginasweb/clientescadastro.html'
 
 class ControladorListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
@@ -670,7 +671,7 @@ class ControladorAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, Tem
         return context
 
 class RegraAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, TemplateView):
-    group_required = u"Administrador", u""
+    group_required = u"Administrador", u"Usuário"
     template_name = 'paginasweb/regrascadastro_completo.html'
 
     def get_context_data(self, **kwargs):
