@@ -28,7 +28,7 @@
             <td>{{ obj.email }}</td>
             <td>{{ obj.date_joined }}</td>
             <td>
-              <a href="{% url 'editar-cadastro' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'editar-cadastro-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
               <a href="{% url 'excluir-cadastro' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
           </tr>

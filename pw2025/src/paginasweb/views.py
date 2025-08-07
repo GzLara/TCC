@@ -218,7 +218,7 @@ class SobreAdminCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
 
 class CadastroCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
      group_required = [u"Administrador", u"Usuário"]
-     model = Cadastro
+     model = User
      fields = ['nome']
      template_name = 'paginasweb/cadastro.html'
      success_url = reverse_lazy('index')
@@ -352,11 +352,12 @@ class AdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, U
           self.object = get_object_or_404(Admin, pk=self.kwargs['pk'], usuario=self.request.user)
           return self.object
 
-class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-     group_required = [u"Administrador", u"Usuário"]
+
+class CadastroUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+     group_required = ["Administrador"]
      model = User
      fields = ['username', 'email']
-     template_name = 'paginasweb/formlogin.html'
+     template_name = 'paginasweb/form.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {
           'titulo': 'Cadastro de cliente',
@@ -365,10 +366,25 @@ class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin
      success_message = "Cadastro atualizado com sucesso!"
 
      def get_object(self, queryset=None):
-          self.object = get_object_or_404(User, pk=self.kwargs['pk'])
-          if self.object == self.request.user or self.request.user.is_superuser:
-            return self.object
-        
+               return get_object_or_404(User, pk=self.kwargs['pk'])
+
+
+class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+     group_required = [u"Usuário"]
+     model = User
+     fields = ['username', 'email']
+     template_name = 'paginasweb/form.html'
+     success_url = reverse_lazy('adminindex')
+     extra_context = {
+          'titulo': 'Cadastro de cliente',
+          'botao': 'Cadastrar'
+     }
+     success_message = "Cadastro atualizado com sucesso!"
+
+     def get_object(self, queryset=None):
+              return get_object_or_404(User, pk=self.request.user.pk)
+          
+          
 
 class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = [u"Administrador", u"Usuário"]
@@ -600,7 +616,7 @@ class SobreAdminDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
 
 
 class CadastroListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
-     group_required = [u"Administrador", u"Usuário"]
+     group_required = [u"Administrador"]
      model = User
      template_name = 'paginasweb/clientescadastro.html'
 

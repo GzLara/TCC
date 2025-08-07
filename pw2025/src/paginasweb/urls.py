@@ -3,7 +3,6 @@ from .views import *
 from .views import LeituraCreateView
 
 from .views import *
-from . import views
 
 from django.contrib.auth import views as auth_views
 
@@ -41,8 +40,8 @@ urlpatterns = [
     #parte tcc
 	#path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
     path('login-admin/', redirecionar_para_adminindex, name='login-admin'),  # onde o formulário envia
-    path('api/leituras/', views.LeituraCreateView.as_view(), name='leituras_create'),
-    path('api/grafico/', views.grafico_dados, name='grafico_dados'),
+    path('api/leituras/', LeituraCreateView.as_view(), name='leituras_create'),
+    path('api/grafico/', grafico_dados, name='grafico_dados'),
     path('controladores-completo/', ControladorAdminComClienteView.as_view(), name='controladores-completo'),
     path('regras-completo/', RegraAdminComClienteView.as_view(), name='regras-completo'),
 
@@ -67,7 +66,8 @@ urlpatterns = [
     path('editar/regraadmin/<int:pk>/', RegraUpdateAdmin.as_view(), name='editar-regra-admin'),
     path('editar/controlador/<int:pk>/', ControladorUpdate.as_view(), name='editar-controlador'),
     path('editar/regra/<int:pk>/', RegraUpdate.as_view(), name='editar-regra'),
-    path('editar/cadastro/<int:pk>/', CadastroUpdate.as_view(), name='editar-cadastro'),
+    path('administrar/cadastro/<int:pk>/', CadastroUpdateAdmin.as_view(), name='editar-cadastro-admin'),
+    path('editar/cadastro/', CadastroUpdate.as_view(), name='editar-cadastro'),
     path('editar/sobreadmin/<int:pk>/', SobreAdminUpdate.as_view(), name='editar-sobreadmin'),
 
     path('excluir/controladoradmin/<int:pk>/', ControladorDeleteAdmin.as_view(), name='excluir-controlador-admin'),

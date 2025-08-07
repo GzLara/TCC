@@ -84,7 +84,7 @@
         <span id="username">{{ request.user }}</span>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenu">
-          <a class="dropdown-item" href="#">
+          <a class="dropdown-item" href="{% url "editar-cadastro" %}">
           <i class="bi bi-person-badge-fill"></i>
         Meus Dados</a>
          <a class="dropdown-item" href="{% url "senha" %}">
