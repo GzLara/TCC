@@ -23,6 +23,7 @@ from django.shortcuts import get_object_or_404
 from .forms import UsuarioForm
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
+import json
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -88,21 +89,21 @@ class LeituraCreateView(View):
     
 
     
-def grafico_dados(request):
-    #ultimos 20 registros ordenados por data decrescente
-    leituras = Leitura.objects.order_by('-data')[:20]
+# def grafico_dados(request):
+#     #ultimos 20 registros ordenados por data decrescente
+#     leituras = Leitura.objects.order_by('-data')[:20]
 
-    #agrupa por tipo de sensor (ex: temperatura, umidade etc.)
-    dados = {}
-    for l in reversed(leituras):  #inverte para mostrar em ordem cronologica
-        if l.sensor not in dados:
-            dados[l.sensor] = []
-        dados[l.sensor].append({
-            "data": l.data.strftime("%H:%M:%S"),
-            "valor": float(l.valor)
-        })
+#     #agrupa por tipo de sensor (ex: temperatura, umidade etc.)
+#     dados = {}
+#     for l in reversed(leituras):  #inverte para mostrar em ordem cronologica
+#         if l.sensor not in dados:
+#             dados[l.sensor] = []
+#         dados[l.sensor].append({
+#             "data": l.data.strftime("%H:%M:%S"),
+#             "valor": float(l.valor)
+#         })
 
-    return JsonResponse(dados)
+#     return JsonResponse(dados)
 
 # Página inicial
 class IndexView(TemplateView):
@@ -695,3 +696,23 @@ class RegraAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, TemplateV
         context['regras_admin'] = RegraAdmin.objects.all()
         context['listar_regra'] = Regra.objects.all()
         return context
+    
+
+
+# ======================================================================================
+
+# Teste de gráfico
+
+def grafico_dados(request):
+    labels = []
+    data = []
+
+    queryset = Leitura.objects.order_by('-data')[:10]  # últimas 10
+    for leitura in queryset:
+        labels.append(leitura.data.strftime('%d/%m'))  # formato da data
+        data.append(leitura.valor)
+
+    return render(request, 'paginasweb/index.html', {
+        'labels': labels[::-1],  # inverte para mostrar do mais antigo ao mais recente
+        'data': data[::-1]
+    })

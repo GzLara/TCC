@@ -41,7 +41,7 @@ urlpatterns = [
 	#path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
     path('login-admin/', redirecionar_para_adminindex, name='login-admin'),  # onde o formulário envia
     path('api/leituras/', LeituraCreateView.as_view(), name='leituras_create'),
-    path('api/grafico/', grafico_dados, name='grafico_dados'),
+    path('index/', grafico_dados, name='grafico'),
     path('controladores-completo/', ControladorAdminComClienteView.as_view(), name='controladores-completo'),
     path('regras-completo/', RegraAdminComClienteView.as_view(), name='regras-completo'),
 

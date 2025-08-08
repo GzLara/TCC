@@ -99,9 +99,9 @@ class RegraAdmin(models.Model):
 
 class Leitura(models.Model):
     valor = models.FloatField()
-    data = models.DateTimeField()
-    temperatura = models.DecimalField(max_digits=5, decimal_places=2)
+    data = models.DateTimeField(auto_now_add=True)
     sensor = models.CharField(max_length=50)
+    Controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE, null=True, blank=True)
     alerta = models.ForeignKey(
         Regra, on_delete=models.SET_NULL, null=True, blank=True
     )
