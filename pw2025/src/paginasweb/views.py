@@ -358,16 +358,16 @@ class CadastroUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequired
      group_required = ["Administrador"]
      model = User
      fields = ['username', 'email']
-     template_name = 'paginasweb/form.html'
+     template_name = 'paginasweb/formadminsenha.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {
-          'titulo': 'Cadastro de cliente',
-          'botao': 'Cadastrar'
+          'titulo': 'Atualizar cadastro de cliente',
+          'botao': 'Atualizar'
      }
      success_message = "Cadastro atualizado com sucesso!"
 
      def get_object(self, queryset=None):
-               return get_object_or_404(User, pk=self.kwargs['pk'])
+               return get_object_or_404(User, pk=self.request.user.pk)
 
 
 class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -377,8 +377,8 @@ class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin
      template_name = 'paginasweb/form.html'
      success_url = reverse_lazy('adminindex')
      extra_context = {
-          'titulo': 'Cadastro de cliente',
-          'botao': 'Cadastrar'
+          'titulo': 'Atualizar cadastro de cliente',
+          'botao': 'Atualizar'
      }
      success_message = "Cadastro atualizado com sucesso!"
 
@@ -713,6 +713,20 @@ def grafico_dados(request):
         data.append(leitura.valor)
 
     return render(request, 'paginasweb/index.html', {
+        'labels': labels[::-1],  # inverte para mostrar do mais antigo ao mais recente
+        'data': data[::-1]
+    })
+
+def grafico_dadosadmin(request):
+    labels = []
+    data = []
+
+    queryset = Leitura.objects.order_by('-data')[:10]  # últimas 10
+    for leitura in queryset:
+        labels.append(leitura.data.strftime('%d/%m'))  # formato da data
+        data.append(leitura.valor)
+
+    return render(request, 'paginasweb/adminindex.html',  {
         'labels': labels[::-1],  # inverte para mostrar do mais antigo ao mais recente
         'data': data[::-1]
     })
