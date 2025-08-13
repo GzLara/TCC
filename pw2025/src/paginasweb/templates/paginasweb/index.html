@@ -81,7 +81,7 @@
         <span id="username">{{ request.user }}</span>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenu">
-          <a class="dropdown-item" href="{% url "editar-cadastro" %}">
+          <a class="dropdown-item" href="{% url "meus-dados" %}">
           <i class="bi bi-person-badge-fill"></i>
         Meus Dados</a>
          <a class="dropdown-item" href="{% url "senha" %}">
@@ -98,7 +98,7 @@
 
     {% else %}
     <div class="menu-fora"> 
-    <li><a href="{% url "cadastrar-cadastro" %}" class="seta-retorno">⭠</a></li>
+    <li><a href="{% url "login" %}" class="seta-retorno">⭠</a></li>
     <li><a href="{% url "sobre" %}">Sobre nós</a></li>
     </div>
     {% endif %}
@@ -141,7 +141,7 @@
 </script>
 
   {% else %}
-  <li><a href="{% url "cadastrar-cadastro" %}">Login</a></li>
+  <li><a href="{% url "registrar" %}">Login</a></li>
   {% endif %}
 
   {% endblock %}

@@ -1,29 +1,32 @@
 from django.views.generic import TemplateView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from .models import Controlador, Sensor, Regra, Leitura
+
 from django.urls import reverse_lazy
-from .models import Controlador, Regra, Leitura, Cadastro, Admin, IndexCliente, ControladorAdmin, RegraAdmin, SobreAdmin
 from django.views import View
 from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.timezone import make_aware
+
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
-from django.contrib.auth import authenticate, login
-from django.http import HttpResponse
+
 from django.shortcuts import redirect
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required, user_passes_test
+
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
 from braces.views import GroupRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+
 from django.shortcuts import get_object_or_404
 from .forms import UsuarioForm
+
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import PermissionDenied
-import json
+
 
 API_SECRET_KEY = "Projeto1MC"
 
@@ -149,8 +152,6 @@ class AdminView(GroupRequiredMixin, TemplateView):
      group_required = u"Administrador"
      template_name = 'paginasweb/adminindex.html'
 
-# Views de cadastro (CreateView)
-
 
 
 class CustomLoginView(LoginView):
@@ -160,21 +161,13 @@ class CustomLoginView(LoginView):
         if self.request.user.is_superuser:
             return reverse_lazy('adminindex')
         else:
-            return reverse_lazy('index')
-
-
-class IndexClienteCreate(GroupRequiredMixin, LoginRequiredMixin, CreateView):
-     group_required = [u"Administrador", u"Usuário"]
-     model: IndexCliente
-     fields = ['descricao']
-     template_name = 'paginasweb/index.html'
-     success_url = reverse_lazy('index')
+            return reverse_lazy('login')
 
 
 class UsuarioCreate(SuccessMessageMixin, CreateView):
     template_name = 'paginasweb/form.html'     
     form_class = UsuarioForm
-    success_url = reverse_lazy('cadastrar-cadastro')
+    success_url = reverse_lazy('index')
     extra_context = {
         'titulo': 'Cadastro de Usuário',
         'botao': 'Cadastrar'
@@ -193,55 +186,11 @@ class UsuarioCreate(SuccessMessageMixin, CreateView):
         return url
 
 
-class AdminCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    group_required = u"Administrador"
-    model = Admin
-    fields = ['nome']
-    template_name = 'paginasweb/adminindex.html'
-    success_url = reverse_lazy('adminindex')
-    extra_context = {
-         'titulo': 'Cadastro de cliente',
-         'botao': 'Cadastrar'
-     }
-    success_message = "Cadastro de administrador feito com sucesso!"
+######################################################################################
 
-class SobreAdminCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    group_required = u"Administrador"
-    model = SobreViewAdmin
-    fields = ['titulo', 'conteudo']
-    template_name = 'paginasweb/sobreadmin.html'
-    success_url = reverse_lazy('sobreadmin')
-    extra_context = {
-        'titulo': 'Sobre nós',
-        'botao': 'Salvar'
-    }
-    success_message = "Sobre criado com sucesso!"
-
-class CadastroCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-     group_required = [u"Administrador", u"Usuário"]
-     model = User
-     fields = ['nome']
-     template_name = 'paginasweb/cadastro.html'
-     success_url = reverse_lazy('index')
-     extra_context = {
-          'titulo': 'Cadastro de cliente',
-          'botao': 'Cadastrar'
-     }
-     success_message = "Cadastro feito com sucesso!"
-
-     def form_valid(self, form):
-
-        # Antes do super n foi criado o objeto nem salvo no banco
-        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
-
-        url = super().form_valid(form)
-        
-        # Depois do super, o objeto foi criado
-
-        return url
 
 class ControladorCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    group_required = [u"Administrador", u"Usuário"]
+    group_required = [u"Usuário"]
     model = Controlador
     fields = ['nome', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -252,24 +201,20 @@ class ControladorCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMi
     }
     success_message = "Controlador criado com sucesso!"
 
-
     def form_valid(self, form):
-
         # Antes do super n foi criado o objeto nem salvo no banco
         form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
-
+        form.instance.cadastrado_por = self.request.user  # Define o usuário logado como quem cadastrou o controlador
         url = super().form_valid(form)
-        
-        # Depois do super, o objeto foi criado
-
         return url
 
+
 class ControladorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    group_required = u"Administrador"
-    model = ControladorAdmin
+    group_required = [u"Administrador"]
+    model = Controlador
     fields = ['nome', 'descricao', 'usuario']
     template_name = 'paginasweb/formadminsenha.html'
-    success_url = reverse_lazy('controladores-completo')
+    success_url = reverse_lazy('listar-controlador')
     extra_context = {
         'titulo': 'Cadastro de controlador',
         'botao': 'Cadastrar'
@@ -277,21 +222,28 @@ class ControladorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
     success_message = "Controlador criado com sucesso!"
 
     def form_valid(self, form):
-
-        # Antes do super n foi criado o objeto nem salvo no banco
-        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
-
+        form.instance.cadastrado_por = self.request.user  # Define o usuário logado como quem cadastrou o controlador
         url = super().form_valid(form)
-        
-        # Depois do super, o objeto foi criado
-
         return url
 
 
+class SensorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
+    group_required = [u"Administrador"]
+    model = Sensor
+    fields = ['numero_serial', 'descricao', 'controlador']
+    template_name = 'paginasweb/formadminsenha.html'
+    success_url = reverse_lazy('listar-sensor')
+    extra_context = {
+        'titulo': 'Cadastro de sensor',
+        'botao': 'Cadastrar'
+    }
+    success_message = "Sensor criado com sucesso!"
+
+
 class RegraCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    group_required = [u"Administrador", u"Usuário"]
+    group_required = [u"Usuário"]
     model = Regra
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
     template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-regra')
     extra_context = {
@@ -300,369 +252,330 @@ class RegraCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, C
     }
     success_message = "Regra criada com sucesso!"
 
+    # Listar somente os sensores dos controladores que o usuário cadastrou (logado)
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['sensor'].queryset = Sensor.objects.filter(controlador__usuario=self.request.user)
+        return form
 
     def form_valid(self, form):
-
         # Antes do super n foi criado o objeto nem salvo no banco
         form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
-
+        form.instance.cadastrado_por = self.request.user  # Define o usuário logado como quem cadastrou a regra
         url = super().form_valid(form)
-        
-        # Depois do super, o objeto foi criado
 
         return url
+    
 
 class RegraCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
-    group_required = u"Administrador"
-    model = RegraAdmin
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador', 'usuario']
+    group_required = [u"Administrador"]
+    model = Regra
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
     template_name = 'paginasweb/formadminsenha.html'
-    success_url = reverse_lazy('regras-completo')
+    success_url = reverse_lazy('listar-regra')
     extra_context = {
-        'titulo': 'Cadastro regra',
+        'titulo': 'Cadastro de regra',
         'botao': 'Cadastrar'
     }
     success_message = "Regra criada com sucesso!"
 
+    # Definir o usuário como o usuário do controlador e não o usuário logado
     def form_valid(self, form):
+        form.instance.usuario = form.instance.sensor.controlador.usuario
+        form.instance.cadastrado_por = self.request.user
+        return super().form_valid(form)
 
-        # Antes do super n foi criado o objeto nem salvo no banco
-        form.instance.usuario = self.request.user  # Define o usuário logado como o criador do cadastro
-
-        url = super().form_valid(form)
-        
-        # Depois do super, o objeto foi criado
-
-        return url
 
 ################################################################################
 
-class AdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-     group_required = u"Administrador"
-     model = Admin
-     fields = ['nome']
-     template_name = 'paginasweb/formlogin.html'
-     success_url = reverse_lazy('adminindex')
-     extra_context = {
-          'titulo': 'Cadastro de cliente',
-          'botao': 'Cadastrar'
-     }
-     success_message = "Administrador atualizado com sucesso!"
 
-     def get_object(self, queryset=None):
-          self.object = get_object_or_404(Admin, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object
+class UserUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = [u"Usuário"]
+    model = User
+    fields = ['first_name', 'last_name','username', 'email']
+    template_name = 'paginasweb/form.html'
+    success_url = reverse_lazy('index')
+    extra_context = {
+        'titulo': 'Atualizar meus dados',
+        'botao': 'Atualizar'
+    }
+    success_message = "Cadastro atualizado com sucesso!"
 
-
-class CadastroUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-     group_required = ["Administrador"]
-     model = User
-     fields = ['username', 'email']
-     template_name = 'paginasweb/formadminsenha.html'
-     success_url = reverse_lazy('adminindex')
-     extra_context = {
-          'titulo': 'Atualizar cadastro de cliente',
-          'botao': 'Atualizar'
-     }
-     success_message = "Cadastro atualizado com sucesso!"
-
-     def get_object(self, queryset=None):
-               return get_object_or_404(User, pk=self.request.user.pk)
+    def get_object(self, queryset=None):
+        return self.request.user
 
 
-class CadastroUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-     group_required = [u"Usuário"]
-     model = User
-     fields = ['username', 'email']
-     template_name = 'paginasweb/form.html'
-     success_url = reverse_lazy('adminindex')
-     extra_context = {
-          'titulo': 'Atualizar cadastro de cliente',
-          'botao': 'Atualizar'
-     }
-     success_message = "Cadastro atualizado com sucesso!"
+class UserUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = [u"Administrador"]
+    model = User
+    fields = ['first_name', 'last_name','username', 'email']
+    template_name = 'paginasweb/form.html'
+    success_url = reverse_lazy('index')
+    extra_context = {
+        'titulo': 'Atualizar meus dados',
+        'botao': 'Atualizar'
+    }
+    success_message = "Cadastro atualizado com sucesso!"
 
-     def get_object(self, queryset=None):
-              return get_object_or_404(User, pk=self.request.user.pk)
-          
-          
+    def get_object(self, queryset=None):
+        return get_object_or_404(User, pk=self.kwargs['pk'])
+
 
 class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    group_required = [u"Administrador", u"Usuário"]
+    group_required = [u"Usuário"]
     model = Controlador
     fields = ['nome', 'descricao']
     template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('index')
     extra_context = {
-    'titulo': 'Cadastro de controlador',
-    'botao': 'Cadastrar'
+    'titulo': 'Atualização de controlador',
+    'botao': 'Salvar'
     }
     success_message = "Controlador atualizado com sucesso!"
 
+    # Busca o objeto com a pk e o usuário autenticado
     def get_object(self, queryset=None):
-          self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
-            return self.object
+        self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'], usuario=self.request.user)
+        return self.object
+
 
 class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = u"Administrador"
-    model = ControladorAdmin
+    model = Controlador
     fields = ['nome', 'descricao', 'usuario']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('adminindex')
     extra_context = {
-    'titulo': 'Cadastro de controlador',
-    'botao': 'Cadastrar'
+        'titulo': 'Atualização de controlador',
+        'botao': 'Salvar'
     }
     success_message = "Controlador atualizado com sucesso!"
 
-    def get_object(self, queryset=None):
-     self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'])
-     if self.object.usuario != self.request.user:
-        raise PermissionDenied("Você não tem permissão para acessar este objeto.")
-     return self.object
 
-    # def get_object(self, queryset=None):
-    #       self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
-    #       return self.object
-    
-
-class RegraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    group_required = [u"Administrador", u"Usuário"]
-    model = Regra
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador']
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
-    extra_context = {
-    'titulo': 'Cadastro regra',
-    'botao': 'Cadastrar'
-    }
-    success_message = "Regra atualizada com sucesso!"
-
-    def get_object(self, queryset=None):
-          self.object = get_object_or_404(Regra, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
-            return self.object
-
-class RegraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+class SensorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = u"Administrador"
-    model = RegraAdmin
-    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'controlador', 'admin']
+    model = Sensor
+    fields = ['nome', 'descricao', 'controlador']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('adminindex')
     extra_context = {
-    'titulo': 'Cadastro regra',
-    'botao': 'Cadastrar'
+        'titulo': 'Atualização de sensor',
+        'botao': 'Salvar'
     }
-    success_message = "Regra atualizada com sucesso!"
+    success_message = "Sensor atualizado com sucesso!"
 
-    def get_object(self, queryset=None):
-         self.object = get_object_or_404(RegraAdmin, pk=self.kwargs['pk'])
-         if self.object.usuario != self.request.user:
-          raise PermissionDenied("Você não tem permissão para acessar este objeto.")
-         return self.object
 
-class LeituraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    group_required = u"Administrador"
-    model = Leitura
-    fields = ['tipo_sensor', 'valor', 'data', 'sensor', 'alerta']
+class RegraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = [u"Usuário"]
+    model = Regra
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
     template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('index')
     extra_context = {
-    'titulo': 'Cadastro de leitura',
-    'botao': 'Cadastrar'
+    'titulo': 'Atualização de regra',
+    'botao': 'Salvar'
     }
-    success_message = "Leitura atualizada com sucesso!"
+    success_message = "Regra atualizada com sucesso!"
+
+    # Listar somente os sensores do usuário
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        form.fields['sensor'].queryset = Sensor.objects.filter(controlador__usuario=self.request.user)
+        return form
 
     def get_object(self, queryset=None):
-          self.object = get_object_or_404(Leitura, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object
+        self.object = get_object_or_404(Regra, pk=self.kwargs['pk'], usuario=self.request.user)
+        return self.object
+    
 
-class SobreAdminUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    group_required = u"Administrador"
-    model = SobreAdmin
-    fields = ['titulo', 'conteudo']
+class RegraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = [u"Administrador"]
+    model = Regra
+    fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
     template_name = 'paginasweb/formadminsenha.html'
-    sucess_url = reverse_lazy('sobreadmin')
+    success_url = reverse_lazy('listar-regra')
     extra_context = {
+        'titulo': 'Cadastro de regra',
+        'botao': 'Cadastrar'
+    }
+    success_message = "Regra criada com sucesso!"
+
+    # Definir o usuário como sendo o usuário que possui o controlador desse sensor
+    def form_valid(self, form):
+        form.instance.usuario = form.instance.sensor.controlador.usuario
+        return super().form_valid(form)
+    
+
+class LeituraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
+    group_required = u"Administrador"
+    model = Leitura
+    fields = ['valor', 'data', 'sensor']
+    template_name = 'paginasweb/formadminsenha.html'
+    success_url = reverse_lazy('index')
+    extra_context = {
+        'titulo': 'Atualização de leitura',
         'botao': 'Salvar'
     }
-    success_message = "Sobre atualizado com sucesso!"
+    success_message = "Leitura atualizada com sucesso!"
+    
 
-    def get_object(self, queryset=None):
-          self.object = get_object_or_404(SobreAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object
+####################################################################################
 
-    ####################################################################################
-
-class CadastroDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-     group_required = [u"Administrador", u"Usuário"]
-     model = User
-     template_name = 'paginasweb/formadminsenha.html'
-     success_url = reverse_lazy('adminindex')
-     extra_context = {
-          'titulo': 'Excluir cadastro de cliente',
-          'botao': 'Excluir'
-     }
-     success_message = "Cadastro deletado com sucesso!"
-
-     def get_object(self, queryset=None):
-          self.object = get_object_or_404(User, pk=self.kwargs['pk'])
-          if self.object == self.request.user or self.request.user.is_superuser:
-            return self.object
 
 class ControladorDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-        group_required = [u"Administrador", u"Usuário"]
-        model = Controlador
-        template_name = 'paginasweb/form.html'
-        success_url = reverse_lazy('index')
-        extra_context = {
+    group_required = [u"Administrador", u"Usuário"]
+    model = Controlador
+    template_name = 'paginasweb/form.html'
+    success_url = reverse_lazy('index')
+    extra_context = {
         'titulo': 'Excluir controlador',
         'botao': 'Excluir',
-        }
-        success_message = "Controlador deletado com sucesso!"
+    }
+    success_message = "Controlador deletado com sucesso!"
 
-        def get_object(self, queryset=None):
-          self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+    def get_object(self, queryset=None):
+        self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'])
+        # Se for o usuário logado ou pertencer ao grupo Administrador...
+        if self.object.usuario == self.request.user or self.request.user.groups.filter(name='Administrador').exists():  
             return self.object
+        else:
+            raise PermissionDenied("Você não tem permissão para acessar este objeto.")
 
-class ControladorDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-        group_required = u"Administrador"
-        model = ControladorAdmin
-        template_name = 'paginasweb/formadminsenha.html'
-        success_url = reverse_lazy('adminindex')
-        extra_context = {
-        'titulo': 'Excluir controlador',
+
+class SensorDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+    group_required = [u"Administrador"]
+    model = Sensor
+    template_name = 'paginasweb/form.html'
+    success_url = reverse_lazy('index')
+    extra_context = {
+        'titulo': 'Excluir sensor',
         'botao': 'Excluir',
-        }
-        success_message = "Controlador deletado com sucesso!"
+    }
+    success_message = "Sensor deletado com sucesso!"
 
+    # Se o usuário pode excluir, tire o comentário do método abaixo
 
-        def get_object(self, queryset=None):
-         self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'])
-         if self.object.usuario != self.request.user:
-          raise PermissionDenied("Você não tem permissão para acessar este objeto.")
-         return self.object
+    # def get_object(self, queryset=None):
+    #     self.object = get_object_or_404(Sensor, pk=self.kwargs['pk'])
+    #     # Se for o usuário logado ou pertencer ao grupo Administrador...
+    #     if self.object.controlador.usuario == self.request.user or self.request.user.groups.filter(name='Administrador').exists():
+    #         return self.object
+    #     else:
+    #         raise PermissionDenied("Você não tem permissão para acessar este objeto.")
+        
 
-        # def get_object(self, queryset=None):
-        #   self.object = get_object_or_404(ControladorAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
-        #   return self.object 
-          
 class RegraDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-        group_required = [u"Administrador", u"Usuário"]
-        model = Regra
-        template_name = 'paginasweb/form.html'
-        success_url = reverse_lazy('index')
-        extra_context = {
+    group_required = [u"Administrador", u"Usuário"]
+    model = Regra
+    template_name = 'paginasweb/form.html'
+    success_url = reverse_lazy('index')
+    extra_context = {
         'titulo': 'Excluir regra',
         'botao': 'Excluir'
-        }
-        success_message = "Regra deletada com sucesso!"
+    }
+    success_message = "Regra deletada com sucesso!"
 
-        def get_object(self, queryset=None):
-          self.object = get_object_or_404(Regra, pk=self.kwargs['pk'])
-          if self.object.usuario == self.request.user or self.request.user.is_superuser:
+    def get_object(self, queryset=None):
+        self.object = get_object_or_404(Regra, pk=self.kwargs['pk'])
+        if self.object.usuario == self.request.user or self.request.user.groups.filter(name='Administrador').exists():
             return self.object
+        else:
+            raise PermissionDenied("Você não tem permissão para acessar este objeto.")
 
-class RegraDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-        group_required = u"Administrador"
-        model = RegraAdmin
-        template_name = 'paginasweb/formadminsenha.html'
-        success_url = reverse_lazy('adminindex')
-        extra_context = {
-        'titulo': 'Excluir regra',
-        'botao': 'Excluir'
-        }
-        success_message = "Regra deletada com sucesso!"
 
-        def get_object(self, queryset=None):
-         self.object = get_object_or_404(RegraAdmin, pk=self.kwargs['pk'])
-         if self.object.usuario != self.request.user:
-          raise PermissionDenied("Você não tem permissão para acessar este objeto.")
-         return self.object
-
-class LeituraDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+class LeituraDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
         group_required = u"Administrador"
         model = Leitura
         template_name = 'paginasweb/form.html'
         success_url = reverse_lazy('index')
         extra_context = {
-        'titulo': 'Excluir leitura',
-        'botao': 'Excluir'
-            }
+            'titulo': 'Excluir leitura',
+            'botao': 'Excluir'
+        }
         success_message = "Leitura deletada com sucesso!"
 
         def get_object(self, queryset=None):
-          self.object = get_object_or_404(Leitura, pk=self.kwargs['pk'], usuario=self.request.user)
-          return self.object
-
-class SobreAdminDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
-    group_required = u"Administrador"
-    model = SobreAdmin
-    template_name = 'paginasweb/formadminsenha.html'
-    success_url = reverse_lazy('sobreadmin')
-    extra_context = {
-        'titulo': 'Excluir sobre',
-        'botao': 'Excluir'
-    }
-    success_message = "Sobre deletado com sucesso!"
-
-    def get_object(self, queryset=None):
-          self.object = get_object_or_404(SobreAdmin, pk=self.kwargs['pk'], usuario=self.request.user)
+          self.object = get_object_or_404(Leitura, pk=self.kwargs['pk'])
           return self.object
         
 
 ######################################################
 
 
-class CadastroListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
-     group_required = [u"Administrador"]
-     model = User
-     template_name = 'paginasweb/clientescadastro.html'
+class ControladorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+    group_required = [u"Administrador", u"Usuário"]
+    model = Controlador
+    template_name = 'paginasweb/controladorcadastro_completo.html'
 
-class ControladorListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
-     group_required = [u"Administrador", u"Usuário"]
-     model = Controlador
-     template_name = 'paginasweb/controlador.html'
+    def get_queryset(self):
+        queryset = Controlador.objects.all()
+        return queryset.filter(usuario=self.request.user)
 
-     def get_context_data(self, **kwargs):
-         context = super().get_context_data(**kwargs)
-
-         # Pega os dois conjuntos de controladores
-         controladores_admin = ControladorAdmin.objects.all()
-         listar_controlador = Controlador.objects.all()
-         
-         # Tabela vermelha: junta admin + clientes
-         context['object_list'] = list(listar_controlador) + list(controladores_admin)
-
-         return context
-
-
-class ControladorListViewAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
-     group_required = u"Administrador"
-     model = ControladorAdmin
-     template_name = 'paginasweb/controladorcadastro.html'
-
-class RegraListViewAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
-     group_required = u"Administrador"
-     model = RegraAdmin
-     template_name = 'paginasweb/regracadastro.html'
-
-class RegraListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
-     group_required = [u"Administrador", u"Usuário"]
-     model = Regra
-     template_name = 'paginasweb/regra.html'
-
-     def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['regras_admin'] = RegraAdmin.objects.all()  # regras do admin
+
+        # Se for do grupo do grupo admin, filtra todas, menos as minhas
+        if self.request.user.groups.filter(name='Administrador').exists():
+            controladores = Controlador.objects.all()
+            controladores = controladores.exclude(usuario=self.request.user)
+            context['todos_controladores'] = controladores
+
         return context
 
-class LeituraListView(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+
+class SensorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+    group_required = [u"Administrador", u"Usuário"]
+    model = Sensor
+    template_name = 'paginasweb/sensor.html'
+
+    def get_queryset(self):
+        queryset = Sensor.objects.all()
+        return queryset.filter(controlador__usuario=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Se for do grupo do grupo admin, filtra todas, menos as minhas
+        if self.request.user.groups.filter(name='Administrador').exists():
+            sensores = Sensor.objects.all()
+            sensores = sensores.exclude(controlador__usuario=self.request.user)
+            context['todos_sensores'] = sensores
+
+        return context
+    
+
+class RegraList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+    group_required = [u"Administrador", u"Usuário"]
+    model = Regra
+    template_name = 'paginasweb/regra.html'
+
+    def get_queryset(self):
+        queryset = Regra.objects.all()
+        return queryset.filter(usuario=self.request.user)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Se for do grupo do grupo admin, filtra todas, menos as minhas
+        if self.request.user.groups.filter(name='Administrador').exists():
+            regras = Regra.objects.all()
+            regras = regras.exclude(usuario=self.request.user)
+            context['todas_regras'] = regras
+
+        return context
+
+
+class LeituraList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
      group_required = u"Administrador"
      model = Leitura
      template_name = 'paginasweb/leitura.html'
+
+
+class UserList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
+    group_required = [u"Administrador"]
+    model = User
+    template_name = 'paginasweb/clientescadastro.html'
+
 
 ########################################################## Teste user permitido
 
@@ -672,7 +585,7 @@ def redirecionar_para_adminindex(request):
         return redirect('adminindex')  # redireciona para a página principal do admin
     
 def redirecionar_para_login(request):
-        return redirect('cadastrar-cadastro')  # redireciona para a página inícial (login)
+        return redirect('login')  # redireciona para a página inícial (login)
 
 
 #unir tabelas de controlador e regra do admin com cliente

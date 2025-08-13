@@ -11,97 +11,61 @@ from django.contrib.auth.models import User
 # Cada campo tem suas propriedades, que estão disponíveis em
 # https://docs.djangoproject.com/pt-br/4.2/ref/models/fields/#field-options
 
-class IndexCliente(models.Model):
-    descricao = models.CharField(max_length=255, verbose_name="Descrição")
-
-
-class TipoSensor(models.Model):
-    numero_serial = models.CharField(max_length=255, verbose_name="Número Serial")
-    descricao = models.CharField(max_length=255, verbose_name="Descrição")
-
-    def __str__(self):
-        return f"{self.numero_serial}"
-
-    
-class Admin(models.Model):
-    nome = models.CharField(max_length=30, verbose_name="Nome")
-    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='admin')
-
-    def __str__(self):
-        return f"{self.nome}"
-    
-class SobreAdmin(models.Model):
-    titulo = models.TextField(max_length=255, verbose_name="Título")
-    conteudo = models.TextField(verbose_name="Conteúdo")
-
-    def __str__(self):
-        return f"{self.titulo}"
-
-class Cadastro(models.Model):
-    nome = models.CharField(max_length=30, verbose_name="Nome")
-    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True, related_name='cadastro')
-
-    def __str__(self):
-        return f"{self.nome}"
     
 class Controlador(models.Model):
     nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
-    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
     usuario = models.ForeignKey(User, on_delete=models.PROTECT)
+    
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE, related_name='controladores')
+    cadastrado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.nome}"
     
-class ControladorAdmin(models.Model):
-    nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
+
+class Sensor(models.Model):
+    numero_serial = models.CharField(max_length=255, verbose_name="Número Serial")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
-    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default=2)
+    controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE)
+    
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sensores')
+    cadastrado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nome}"
+        return f"{self.numero_serial} - {self.descricao} - {self.controlador.nome}"
 
-class Regra(models.Model):
-    descricao = models.CharField(max_length=255, verbose_name="Descrição")
-    horario_inicio = models.CharField(
-        max_length=10,
-        verbose_name="Horário de Início"
-    )
-    horario_fim = models.CharField(
-        max_length=10,
-        verbose_name="Horário de Fim"
-    )
-    valor_minimo = models.FloatField("Valor Mínimo")
-    valor_maximo = models.FloatField(verbose_name="Valor Máximo")
-    controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE, null=True, blank=True)
-    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default= 0)
-
-
-class RegraAdmin(models.Model):
-    descricao = models.CharField(max_length=255, verbose_name="Descrição")
-    horario_inicio = models.CharField(
-        max_length=10,
-        verbose_name="Horário de Início"
-    )
-    horario_fim = models.CharField(
-        max_length=10,
-        verbose_name="Horário de Fim"
-    )
-    valor_minimo = models.FloatField("Valor Mínimo")
-    valor_maximo = models.FloatField(verbose_name="Valor Máximo")
-    controlador = models.ForeignKey(ControladorAdmin, on_delete=models.CASCADE, null=True, blank=True)
-    cadastrado_em = models.DateTimeField(max_length=30, auto_now_add=True)
-    usuario = models.ForeignKey(User, on_delete=models.CASCADE, default= 0)
 
 class Leitura(models.Model):
     valor = models.FloatField()
-    data = models.DateTimeField(auto_now_add=True)
-    sensor = models.CharField(max_length=50)
-    Controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE, null=True, blank=True)
-    alerta = models.ForeignKey(
-        Regra, on_delete=models.SET_NULL, null=True, blank=True
-    )
+    data = models.DateTimeField()
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, null=True)
+    
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='leituras')
+    cadastrado_em = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.valor} - {self.data} - {self.sensor.numero_serial}"
+    
+
+class Regra(models.Model):
+    descricao = models.CharField(max_length=255, verbose_name="Descrição")
+    
+    horario_inicio = models.TimeField(verbose_name="Horário de Início")
+    horario_fim = models.TimeField(verbose_name="Horário de Fim")
+    
+    valor_minimo = models.FloatField(verbose_name="Valor Mínimo")
+    valor_maximo = models.FloatField(verbose_name="Valor Máximo")
+    
+    sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, null=True)
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE, related_name='regras')
+    cadastrado_em = models.DateTimeField(auto_now_add=True)
+    atualizado_em = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.descricao} - {self.sensor} - {self.usuario}"
+

@@ -45,9 +45,9 @@
     Listar
   </a>
   <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="{% url "listar-clientes-cadastro" %}">Clientes</a></li>
-    <li><a class="dropdown-item" href="{% url "controladores-completo" %}">Controladores</a></li>
-    <li><a class="dropdown-item" href="{% url "regras-completo" %}">Regras</a></li>
+    <li><a class="dropdown-item" href="{% url "listar-user" %}">Clientes</a></li>
+    <li><a class="dropdown-item" href="{% url "listar-controlador" %}">Controladores</a></li>
+    <li><a class="dropdown-item" href="{% url "listar-regra" %}">Regras</a></li>
   </ul>
    </li>
     <li class="dropdown">
@@ -68,7 +68,7 @@
         <span id="username">{{ request.user }}</span>
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenu2">
-          <a class="dropdown-item" href="{% url "editar-cadastro-admin" %}">
+          <a class="dropdown-item" href="{% url "meus-dados"  %}">
           <i class="bi bi-person-badge-fill"></i>
         Meus Dados</a>
          <a class="dropdown-item" href="{% url "senha" %}">

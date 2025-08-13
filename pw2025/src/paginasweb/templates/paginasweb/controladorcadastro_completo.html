@@ -4,14 +4,14 @@
 {% block conteudo %}
 
 {% block titulo %}
-  <title>Lista de Controladores (Administrador e Cliente)</title>
+  <title>Lista de Controladores</title>
 {% endblock titulo %}
 
 
 <div class="d-flex justify-content-center align-items-center flex-column min-vh-100 p-4" style="margin-top: 2rem; margin-bottom: 2rem;">
   <!-- TABELA ADMIN -->
   <div class="card p-4 shadow mb-5" style="width: 100%; max-width: 1000px;">
-    <h3 class="text-center mb-4">Controladores do Administrador</h3>
+    <h3 class="text-center mb-4">Meus controladores</h3>
 
     <div class="table-responsive">
       <table class="table table-striped table-hover table-bordered align-middle text-center">
@@ -21,24 +21,26 @@
             <th style="background-color: #58a4b0; color: white;">Descrição</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
             <th style="background-color: #58a4b0; color: white;">Usuário</th>
+            <th style="background-color: #58a4b0; color: white;">Cadastrado por</th>
             <th style="background-color: #58a4b0; color: white;">Opções</th>
           </tr>
         </thead>
         <tbody>
-          {% for obj in controladores_admin %}
+          {% for obj in object_list %}
           <tr>
             <td>{{ obj.nome }}</td>
             <td>{{ obj.descricao }}</td>
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.usuario }}</td>
+            <td>{{ obj.cadastrado_por }}</td>
             <td>
-              <a href="{% url 'editar-controlador-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-controlador-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4">Nenhum controlador do admin encontrado.</td>
+            <td colspan="6">Nenhum controlador do admin encontrado.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -46,7 +48,10 @@
     </div>
   </div>
 
-  <!-- TABELA CLIENTE -->
+  
+  
+
+  {% if todos_controladores %}
   <div class="card p-4 shadow" style="width: 100%; max-width: 1000px; margin-top: 0.5rem;">
     <h3 class="text-center mb-4">Controladores dos Clientes</h3>
 
@@ -62,26 +67,30 @@
           </tr>
         </thead>
         <tbody>
-          {% for obj in listar_controlador %}
+          {% for obj in todos_controladores %}
            <tr>
             <td>{{ obj.nome }}</td>
             <td>{{ obj.descricao }}</td>
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.usuario }}</td>
+            <td>{{ obj.cadastrado_por }}</td>
             <td>
-              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <a href="{% url 'editar-controlador-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'excluir-controlador-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="4">Nenhum controlador de cliente encontrado.</td>
+            <td colspan="6">Nenhum controlador de cliente encontrado.</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
+  {% endif %}
+  
+
 </div>
 
 {% endblock %}
