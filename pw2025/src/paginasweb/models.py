@@ -24,6 +24,9 @@ class Controlador(models.Model):
     def __str__(self):
         return f"{self.nome}"
     
+    class Meta:
+        ordering = ['nome', 'cadastrado_em']
+    
 
 class Sensor(models.Model):
     numero_serial = models.CharField(max_length=255, verbose_name="Número Serial")
@@ -36,6 +39,9 @@ class Sensor(models.Model):
 
     def __str__(self):
         return f"{self.numero_serial} - {self.descricao} - {self.controlador.nome}"
+    
+    class Meta:
+        ordering = ['descricao', 'cadastrado_em']
 
 
 class Leitura(models.Model):
@@ -48,6 +54,9 @@ class Leitura(models.Model):
 
     def __str__(self):
         return f"{self.valor} - {self.data} - {self.sensor.numero_serial}"
+    
+    class Meta:
+        ordering = ['sensor', 'cadastrado_em']
     
 
 class Regra(models.Model):
@@ -69,3 +78,5 @@ class Regra(models.Model):
     def __str__(self):
         return f"{self.descricao} - {self.sensor} - {self.usuario}"
 
+    class Meta:
+        ordering = ['descricao', 'sensor', 'cadastrado_em']

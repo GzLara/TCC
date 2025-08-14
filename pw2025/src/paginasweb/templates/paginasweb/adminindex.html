@@ -57,6 +57,7 @@
   <ul class="dropdown-menu">
     <li><a class="dropdown-item" href="{% url "cadastrar-controlador-admin" %}">Controladores</a></li>
     <li><a class="dropdown-item" href="{% url "cadastrar-regra-admin" %}">Regras</a></li>
+    <li><a class="dropdown-item" href="{% url "cadastrar-sensor-admin" %}">Sensor</a></li>
   </ul>
    </li>
     <li><a href="{% url "sobreadmin" %}">Sobre nós</a></li>
@@ -83,7 +84,7 @@
 
     {% else %}
      <div class="menu-fora-admin"> 
-    <li><a href="{% url "cadastrar-cadastro" %}" class="seta-retorno">⭠</a></li>
+    <li><a href="{% url "login" %}" class="seta-retorno">⭠</a></li>
     <li><a href="{% url "sobre" %}">Sobre nós</a></li>
      </div>
     

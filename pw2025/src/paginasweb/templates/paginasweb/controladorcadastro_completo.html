@@ -19,9 +19,10 @@
           <tr>
             <th style="background-color: #58a4b0; color: white;">Nome</th>
             <th style="background-color: #58a4b0; color: white;">Descrição</th>
-            <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
             <th style="background-color: #58a4b0; color: white;">Usuário</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado por</th>
+            <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
+            <th style="background-color: #58a4b0; color: white;">Atualizado em</th>
             <th style="background-color: #58a4b0; color: white;">Opções</th>
           </tr>
         </thead>
@@ -30,9 +31,10 @@
           <tr>
             <td>{{ obj.nome }}</td>
             <td>{{ obj.descricao }}</td>
-            <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.usuario }}</td>
             <td>{{ obj.cadastrado_por }}</td>
+            <td>{{ obj.cadastrado_em }}</td>
+            <td>{{ obj.atualizado_em }}</td>
             <td>
               <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
               <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
@@ -61,8 +63,10 @@
           <tr>
             <th style="background-color: #EF233C; color: white;">Nome</th>
             <th style="background-color: #EF233C; color: white;">Descrição</th>
-            <th style="background-color: #EF233C; color: white;">Cadastrado em</th>
             <th style="background-color: #EF233C; color: white;">Usuário</th>
+            <th style="background-color: #EF233C; color: white;">Cadastrado por</th>
+            <th style="background-color: #EF233C; color: white;">Cadastrado em</th>
+            <th style="background-color: #EF233C; color: white;">Atualizado em</th>
             <th style="background-color: #EF233C; color: white;">Opções</th>
           </tr>
         </thead>
@@ -71,9 +75,10 @@
            <tr>
             <td>{{ obj.nome }}</td>
             <td>{{ obj.descricao }}</td>
-            <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.usuario }}</td>
             <td>{{ obj.cadastrado_por }}</td>
+            <td>{{ obj.cadastrado_em }}</td>
+            <td>{{ obj.atualizado_em }}</td>
             <td>
               <a href="{% url 'editar-controlador-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
               <a href="{% url 'excluir-controlador-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>

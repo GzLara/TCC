@@ -230,7 +230,7 @@ class ControladorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
 class SensorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
     group_required = [u"Administrador"]
     model = Sensor
-    fields = ['numero_serial', 'descricao', 'controlador']
+    fields = ['numero_serial', 'descricao', 'controlador', 'cadastrado_por']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('listar-sensor')
     extra_context = {
@@ -355,7 +355,7 @@ class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
 class SensorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = u"Administrador"
     model = Sensor
-    fields = ['nome', 'descricao', 'controlador']
+    fields = ['nome', 'descricao', 'controlador', 'cadastrado_por']
     template_name = 'paginasweb/formadminsenha.html'
     success_url = reverse_lazy('adminindex')
     extra_context = {
@@ -547,7 +547,7 @@ class SensorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, Li
 class RegraList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
     group_required = [u"Administrador", u"Usuário"]
     model = Regra
-    template_name = 'paginasweb/regra.html'
+    template_name = 'paginasweb/regrascadastro_completo.html'
 
     def get_queryset(self):
         queryset = Regra.objects.all()
