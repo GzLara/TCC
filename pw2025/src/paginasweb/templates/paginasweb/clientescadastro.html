@@ -28,8 +28,8 @@
             <td>{{ obj.email }}</td>
             <td>{{ obj.date_joined }}</td>
             <td>
-              <a href="{% url "editar-user-admin" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="#" class="btn btn-sm btn-danger">Excluir</a>
+              <a href="{% url 'editar-user-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'excluir-user-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
           </tr>
           {% empty %}

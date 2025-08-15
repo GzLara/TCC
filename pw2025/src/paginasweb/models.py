@@ -53,7 +53,7 @@ class Leitura(models.Model):
     cadastrado_em = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.valor} - {self.data} - {self.sensor.numero_serial}"
+        return f"{self.valor} - {self.data} - {self.sensor.numero_serial} - {self.sensor.descricao}"
     
     class Meta:
         ordering = ['sensor', 'cadastrado_em']

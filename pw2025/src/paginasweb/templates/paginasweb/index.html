@@ -39,6 +39,8 @@
     transition: none !important;
     outline: none !important;
     background-color: transparent !important;
+    position: absolute !important;
+    z-index: 1050 !important; /* ou maior */
     
   }
 
@@ -114,7 +116,7 @@
     
   <h2>Gráfico de Temperatura</h2>
 
-  <canvas id="grafico" width="650" height="230"></canvas> 
+  <canvas id="grafico" width="650" height="200"></canvas> 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <script>

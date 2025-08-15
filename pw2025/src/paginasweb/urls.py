@@ -57,7 +57,6 @@ urlpatterns = [
     path('controlador/', ControladorView.as_view(), name='controlador'), # Pagina de cadastro de controlador
     path('adminindex/', AdminView.as_view(), name='adminindex'), # Página da área do Admin
     path('regras/', RegraView.as_view(), name='regras'), # Página de regras
-    path('sobreadmin/', SobreViewAdmin.as_view(), name='sobreadmin'),  # Página sobre do admin
 
 
     # Views ajustadas para usuário e administrador
@@ -79,7 +78,7 @@ urlpatterns = [
     path('administrador/editar/regra/<int:pk>/', RegraUpdateAdmin.as_view(), name='editar-regra-admin'),
     path('administrador/editar/leitura/<int:pk>/', LeituraUpdateAdmin.as_view(), name='editar-leitura-admin'),
 
-
+    path('administrador/excluir/user/<int:pk>/', UserDelete.as_view(), name='excluir-user-admin'),
     path('administrador/excluir/sensor/<int:pk>/', SensorDeleteAdmin.as_view(), name='excluir-sensor-admin'),
     path('administrador/excluir/leitura/<int:pk>/', LeituraDeleteAdmin.as_view(), name='excluir-leitura-admin'),
 

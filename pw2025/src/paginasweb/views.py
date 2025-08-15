@@ -121,10 +121,6 @@ class IndexClienteView(TemplateView):
 class SobreView(TemplateView):
     template_name = 'paginasweb/sobre.html'
 
-# Página "sobre" do admin
-class SobreViewAdmin(TemplateView):
-    template_name = 'paginasweb/sobreadmin.html'
-
 # Página "Cadastro"
 class CadastroView(TemplateView):
      template_name = 'paginasweb/cadastro.html'
@@ -167,7 +163,7 @@ class CustomLoginView(LoginView):
 class UsuarioCreate(SuccessMessageMixin, CreateView):
     template_name = 'paginasweb/form.html'     
     form_class = UsuarioForm
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('login')
     extra_context = {
         'titulo': 'Cadastro de Usuário',
         'botao': 'Cadastrar'
@@ -310,7 +306,7 @@ class UserUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixi
     model = User
     fields = ['first_name', 'last_name','username', 'email']
     template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('listar-user')
     extra_context = {
         'titulo': 'Atualizar meus dados',
         'botao': 'Atualizar'
@@ -326,7 +322,7 @@ class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMi
     model = Controlador
     fields = ['nome', 'descricao']
     template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('listar-controlador')
     extra_context = {
     'titulo': 'Atualização de controlador',
     'botao': 'Salvar'
@@ -344,7 +340,7 @@ class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
     model = Controlador
     fields = ['nome', 'descricao', 'usuario']
     template_name = 'paginasweb/formadminsenha.html'
-    success_url = reverse_lazy('adminindex')
+    success_url = reverse_lazy('listar-controlador')
     extra_context = {
         'titulo': 'Atualização de controlador',
         'botao': 'Salvar'
@@ -355,9 +351,9 @@ class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
 class SensorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = u"Administrador"
     model = Sensor
-    fields = ['nome', 'descricao', 'controlador', 'cadastrado_por']
+    fields = ['numero_serial', 'descricao', 'controlador', 'cadastrado_por']
     template_name = 'paginasweb/formadminsenha.html'
-    success_url = reverse_lazy('adminindex')
+    success_url = reverse_lazy('listar-sensor')
     extra_context = {
         'titulo': 'Atualização de sensor',
         'botao': 'Salvar'
@@ -422,11 +418,23 @@ class LeituraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredM
 ####################################################################################
 
 
+class UserDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
+    group_required = [u"Administrador"]
+    model = User
+    template_name = 'paginasweb/form.html'
+    success_url = reverse_lazy('listar-user')
+    extra_context = {
+        'titulo': 'Excluir dados',
+        'botao': 'Excluir',
+    }
+    success_message = "Usuário deletado com sucesso!"
+
+
 class ControladorDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
     group_required = [u"Administrador", u"Usuário"]
     model = Controlador
     template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
+    success_url = reverse_lazy('listar-controlador')
     extra_context = {
         'titulo': 'Excluir controlador',
         'botao': 'Excluir',
@@ -445,8 +453,8 @@ class ControladorDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMi
 class SensorDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
     group_required = [u"Administrador"]
     model = Sensor
-    template_name = 'paginasweb/form.html'
-    success_url = reverse_lazy('index')
+    template_name = 'paginasweb/formadminsenha.html'
+    success_url = reverse_lazy('listar-sensor')
     extra_context = {
         'titulo': 'Excluir sensor',
         'botao': 'Excluir',
@@ -643,3 +651,9 @@ def grafico_dadosadmin(request):
         'labels': labels[::-1],  # inverte para mostrar do mais antigo ao mais recente
         'data': data[::-1]
     })
+
+#no gráfico, se o sensor for do tipo temperatura, mostra o gráfico de temperatura, se for umidade, mostra o gráfico de umidade
+def grafico_sensor(request, sensor_id):
+    sensor = get_object_or_404(Sensor, pk=sensor_id)
+    labels = []
+    data = []

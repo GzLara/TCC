@@ -11,7 +11,7 @@
 <div class="d-flex justify-content-center align-items-center flex-column min-vh-100 p-4" style="margin-top: 2rem; margin-bottom: 2rem;">
   <!-- TABELA ADMIN -->
   <div class="card p-4 shadow mb-5" style="width: 100%; max-width: 1000px;">
-    <h3 class="text-center mb-4">Meus controladores</h3>
+    <h3 class="text-center mb-4">Meus sensores</h3>
 
     <div class="table-responsive">
       <table class="table table-striped table-hover table-bordered align-middle text-center">
@@ -36,8 +36,8 @@
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <a href="{% url 'editar-sensor-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'excluir-sensor-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
           </tr>
           {% empty %}
@@ -53,9 +53,9 @@
   
   
 
-  {% if todos_controladores %}
+  <!-- {% if todos_sensores %}
   <div class="card p-4 shadow" style="width: 100%; max-width: 1000px; margin-top: 0.5rem;">
-    <h3 class="text-center mb-4">Controladores dos Clientes</h3>
+    <h3 class="text-center mb-4">Sensores dos Clientes</h3>
 
     <div class="table-responsive">
       <table class="table table-striped table-hover table-bordered align-middle text-center">
@@ -71,7 +71,7 @@
           </tr>
         </thead>
         <tbody>
-          {% for obj in todos_controladores %}
+          {% for obj in todos_sensores %}
           <tr>
             <td>{{ obj.numero_serial }}</td>
             <td>{{ obj.descricao }}</td>
@@ -80,8 +80,8 @@
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <a href="{% url 'editar-controlador-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-controlador-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <a href="{% url 'editar-sensor-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+              <a href="{% url 'excluir-sensor-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
             </td>
           </tr>
           {% empty %}
@@ -93,7 +93,7 @@
       </table>
     </div>
   </div>
-  {% endif %}
+  {% endif %} -->
   
 
 </div>
