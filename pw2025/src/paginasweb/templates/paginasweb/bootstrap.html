@@ -1,0 +1,168 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br" class="h-100" data-bs-theme="auto">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+
+    {% block titulo %}
+    <title>Sticky Footer Navbar Template · Bootstrap v5.3</title>
+    {% endblock titulo %}    
+
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+    <link href="{% static "css/bootstrap_meu.css" %}" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    
+</head>
+
+<body class="d-flex flex-column h-100 bg-amarelinho">     
+    
+    <header>
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-danger shadow-minha fs-5">
+          <div class="container-fluid">
+              <a class="navbar-brand" href="#">Coraline</a>
+        
+              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              
+            <div class="collapse navbar-collapse justify-content-center" id="navbarCollapse">
+              <!-- Centralizado -->
+              <ul class="navbar-nav mb-2 mb-md-0">
+                
+                <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "index" %}"><i class="bi bi-house"></i> Início</a></li>
+                
+                <!-- Dropdown "Listar" -->
+                 {% if not sou_admin %}
+                <li class="nav-item mx-3 dropdown">
+                    <a class="nav-link link-light dropdown-toggle" href="#" id="listarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-pencil-square"></i> Cadastrar
+                    </a>
+                    <ul class="dropdown-menu rounded-4 fs-5">
+                        <li><a class="dropdown-item" href="{% url "cadastrar-controlador" %}">Controlador</a></li>
+                        <li><a class="dropdown-item" href="{% url "cadastrar-regra" %}">Regra</a></li>
+                    </ul>
+                </li>
+
+                {% else %}
+
+                <li class="nav-item mx-3 dropdown">
+                    <a class="nav-link link-light dropdown-toggle" href="#" id="listarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-pencil-square"></i> Cadastrar (admin)
+                    </a>
+                    <ul class="dropdown-menu rounded-4 fs-5">
+                        <li><a class="dropdown-item" href="{% url "cadastrar-controlador-admin" %}">Controlador</a></li>
+                        <li><a class="dropdown-item" href="{% url "cadastrar-sensor-admin" %}">Sensor</a></li>
+                        <li><a class="dropdown-item" href="{% url "cadastrar-regra-admin" %}">Regra</a></li>
+                    </ul>
+                </li>
+
+                {% endif %}
+
+                <li class="nav-item mx-3 dropdown">
+                    <a class="nav-link link-light dropdown-toggle" href="#" id="listarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-list"></i>Listar
+                    </a>
+                    <ul class="dropdown-menu rounded-4 fs-5">
+                        <li><a class="dropdown-item" href="{% url "listar-controlador" %}">Controlador</a></li>
+                        <li><a class="dropdown-item" href="{% url "listar-sensor" %}">Sensor</a></li>
+                        <li><a class="dropdown-item" href="{% url "listar-regra" %}">Regra</a></li>
+                    </ul>
+                </li>
+
+
+                <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "listar-leitura" %}">Registros de leitura</a></li>
+
+                <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "sobre" %}">Sobre nós</a></li>
+                
+              </ul>
+            </div>
+      
+            <!-- Dropdown do usuário à direita -->
+            <div class="dropdown">
+              <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+                
+                {{request.user.username}}
+                
+              </a>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url "meus-dados" %}">Meus dados</a></li>
+                <li><a class="dropdown-item" href="{% url "senha" %}">Alterar senha</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url "logout" %}">Logout</a></li>
+              </ul>
+            </div>
+      
+          </div>
+        </nav>
+      </header>
+      
+    
+    <main class="flex-shrink-0">
+        <div class="container">
+            <br>
+            {% block conteudo %}
+
+            <h1>Exemplo de título da página</h1>
+
+            <p class="lead">Pin a footer to the bottom of the viewport in desktop browsers with this custom HTML and
+                CSS. A fixed navbar has been added with <code class="small">padding-top: 60px;</code> on the <code
+                    class="small">main &gt; .container</code>.</p>
+
+            <p>Back to <a href="/docs/5.3/examples/sticky-footer/">the default sticky footer</a> minus the navbar.</p>
+            {% endblock conteudo %}
+        </div>
+    </main>
+    
+    
+    <footer class="footer mt-auto py-3 bg-body-tertiary">
+        <div class="container"> <span class="text-body-secondary">Place sticky footer content here.</span> </div>
+    </footer>
+
+
+    {% if messages %}
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1055;">
+        {% for m in messages %}
+        <div class="toast align-items-center bg-light border-0 mb-2" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+            <div class="toast-body">
+                {{ m }}
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+          toastElList.forEach(function (toastEl) {
+            const toast = new bootstrap.Toast(toastEl);
+            toast.show();
+          });
+        });
+    </script>
+
+
+
+    {% block scripts %}{% endblock scripts %}
+
+</body>
+
+</html>

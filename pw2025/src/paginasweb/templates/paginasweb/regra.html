@@ -1,29 +1,32 @@
-{% extends "paginasweb/index.html" %}
+{% extends "paginasweb/bootstrap.html" %}
 {% load static %}
 
 {% block conteudo %}
 
 {% block titulo %}
-    <title>Lista de Regras</title>
-    {% endblock titulo %}
+  <title>Lista de Regras (Administrador e Cliente)</title>
+{% endblock titulo %}
 
-<div class="d-flex justify-content-center align-items-center min-vh-100" style="margin-top: 40px;">
-  <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 1000px; ">
-    <h3 class="text-center mb-4">Lista de regras cadastradas</h3>
+<div class="container my-5" style="margin-bottom: 3rem;"> <!-- Container único para as duas tabelas -->
 
+    <!-- Tabela Administrador -->
+  <div class="card p-4 shadow">
+    <h3 class="text-center mb-4">Minhas regras</h3>
     <div class="table-responsive">
       <table class="table table-striped table-hover table-bordered align-middle text-center">
         <thead>
           <tr>
-            <th style="background-color: #EF233C; color: white;">Descrição</th>
-            <th style="background-color: #EF233C; color: white;">Horário de Início</th>
-            <th style="background-color: #EF233C; color: white;">Horário de Fim</th>
-            <th style="background-color: #EF233C; color: white;">Valor Mínimo</th>
-            <th style="background-color: #EF233C; color: white;">Valor Máximo</th>
-            <th style="background-color: #EF233C; color: white;">Controlador</th>
-            <th style="background-color: #EF233C; color: white;">Cadastrado em</th>
-            <th style="background-color: #EF233C; color: white;">Usuário</th>
-            <th style="background-color: #EF233C; color: white;">Opções</th>
+            <th style="background-color: #58a4b0; color: white;">Descrição</th>
+            <th style="background-color: #58a4b0; color: white;">Horário de Início</th>
+            <th style="background-color: #58a4b0; color: white;">Horário de Fim</th>
+            <th style="background-color: #58a4b0; color: white;">Valor Mínimo</th>
+            <th style="background-color: #58a4b0; color: white;">Valor Máximo</th>
+            <th style="background-color: #58a4b0; color: white;">Controlador</th>
+            <th style="background-color: #58a4b0; color: white;">Usuário</th>
+            <th style="background-color: #58a4b0; color: white;">Cadastrado por</th>
+            <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
+            <th style="background-color: #58a4b0; color: white;">Atualizado em</th>
+            <th style="background-color: #58a4b0; color: white;">Opções</th>
           </tr>
         </thead>
         <tbody>
@@ -35,46 +38,78 @@
             <td>{{ obj.valor_minimo }}</td>
             <td>{{ obj.valor_maximo }}</td>
             <td>{{ obj.controlador }}</td>
-            <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.usuario }}</td>
+            <td>{{ obj.cadastrado_por }}</td>
+            <td>{{ obj.cadastrado_em }}</td>
+            <td>{{ obj.atualizado_em }}</td>
             <td>
-            <div class="d-flex gap-1 justify-content-center">
-              <a href="{% url "editar-regra" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url "excluir-regra" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
-            </div>
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{% url "editar-regra" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+                <a href="{% url "excluir-regra" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              </div>
             </td>
           </tr>
           {% empty %}
           <tr>
-            <td colspan="8">Nenhum registro encontrado.</td>
-          </tr>
-          {% endfor %}
-
-        {% for admin in regras_admin %}
-          <tr>
-            <td>{{ admin.descricao }}</td>
-            <td>{{ admin.horario_inicio }}</td>
-            <td>{{ admin.horario_fim }}</td>
-            <td>{{ admin.valor_minimo }}</td>
-            <td>{{ admin.valor_maximo }}</td>
-            <td>{{ admin.controlador }}</td>
-            <td>{{ admin.cadastrado_em }}</td>
-            <td>
-            <div class="d-flex gap-1 justify-content-center">
-              <a href="{% url "editar-regra-admin" admin.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url "excluir-regra-admin" admin.pk %}" class="btn btn-sm btn-danger">Excluir</a>
-            </div>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="8">Nenhum registro encontrado.</td>
+            <td colspan="11">Nenhum registro encontrado.</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     </div>
   </div>
-</div>
+
+  {% if todas_regras %}
+  <!-- Tabela Clientes -->
+  <div class="card p-4 shadow mb-4" style="margin-top: 3rem;">
+    <h3 class="text-center mb-4">Regras dos Clientes</h3>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-bordered align-middle text-center">
+        <thead>
+          <tr>
+            <th style="background-color: #EF233C; color: white;">Descrição</th>
+            <th style="background-color: #EF233C; color: white;">Horário de Início</th>
+            <th style="background-color: #EF233C; color: white;">Horário de Fim</th>
+            <th style="background-color: #EF233C; color: white;">Valor Mínimo</th>
+            <th style="background-color: #EF233C; color: white;">Valor Máximo</th>
+            <th style="background-color: #EF233C; color: white;">Sensor</th>
+            <th style="background-color: #EF233C; color: white;">Usuário</th>
+            <th style="background-color: #EF233C; color: white;">Cadastrado por</th>
+            <th style="background-color: #EF233C; color: white;">Cadastrado em</th>
+            <th style="background-color: #EF233C; color: white;">Atualizado em</th>
+            <th style="background-color: #EF233C; color: white;">Opções</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for obj in todas_regras %}
+          <tr>
+            <td>{{ obj.descricao }}</td>
+            <td>{{ obj.horario_inicio }}</td>
+            <td>{{ obj.horario_fim }}</td>
+            <td>{{ obj.valor_minimo }}</td>
+            <td>{{ obj.valor_maximo }}</td>
+            <td>{{ obj.sensor }}</td>
+            <td>{{ obj.usuario }}</td>
+            <td>{{ obj.cadastrado_por }}</td>
+            <td>{{ obj.cadastrado_em }}</td>
+            <td>{{ obj.atualizado_em }}</td>
+            <td>
+              <div class="d-flex gap-1 justify-content-center">
+                <a href="{% url "editar-regra-admin" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
+                <a href="{% url "excluir-regra-admin" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="11">Nenhum registro encontrado.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>
+  {% endif %}
 
 {% endblock %}

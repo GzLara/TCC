@@ -11,6 +11,12 @@ from django.contrib.auth.models import User
 # Cada campo tem suas propriedades, que estão disponíveis em
 # https://docs.djangoproject.com/pt-br/4.2/ref/models/fields/#field-options
 
+
+TIPO_SENSOR = [
+    ("1", "Temperatura"),
+    ("2", "Umidade"),
+]
+
     
 class Controlador(models.Model):
     nome = models.CharField(max_length=255, verbose_name="Nome", default="Controlador Padrão")
@@ -22,7 +28,7 @@ class Controlador(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.nome}"
+        return f"{self.nome} ({self.usuario})"
     
     class Meta:
         ordering = ['nome', 'cadastrado_em']
@@ -31,6 +37,7 @@ class Controlador(models.Model):
 class Sensor(models.Model):
     numero_serial = models.CharField(max_length=255, verbose_name="Número Serial")
     descricao = models.CharField(max_length=255, verbose_name="Descrição")
+    tipo_sensor = models.CharField(max_length=30, choices=TIPO_SENSOR, default="1")
     controlador = models.ForeignKey(Controlador, on_delete=models.CASCADE)
     
     cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sensores')

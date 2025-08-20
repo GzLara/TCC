@@ -1,4 +1,4 @@
-{% extends "paginasweb/adminindex.html" %}
+{% extends "paginasweb/bootstrap.html" %}
 {% load static %}
 
 {% block conteudo %}
@@ -19,11 +19,14 @@
           <tr>
             <th style="background-color: #58a4b0; color: white;">Número Serial</th>
             <th style="background-color: #58a4b0; color: white;">Descrição</th>
+            <th style="background-color: #58a4b0; color: white;">Tipo</th>
             <th style="background-color: #58a4b0; color: white;">Controlador</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado por</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
             <th style="background-color: #58a4b0; color: white;">Atualizado em</th>
+            {% if sou_admin %}
             <th style="background-color: #58a4b0; color: white;">Opções</th>
+            {% endif %}
           </tr>
         </thead>
         <tbody>
@@ -31,18 +34,25 @@
           <tr>
             <td>{{ obj.numero_serial }}</td>
             <td>{{ obj.descricao }}</td>
+            <td>{{ obj.get_tipo_sensor_display }}</td>
             <td>{{ obj.controlador }}</td>
             <td>{{ obj.cadastrado_por }}</td>
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
+            {% if sou_admin %}
             <td>
-              <a href="{% url 'editar-sensor-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-sensor-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+                <a href="{% url 'editar-sensor-admin' obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                <a href="{% url 'excluir-sensor-admin' obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+              </div>
+              {% else %}
+              -
             </td>
+            {% endif %}
           </tr>
           {% empty %}
           <tr>
-            <td colspan="6">Nenhum controlador do admin encontrado.</td>
+            <td colspan="7">Nenhum controlador do admin encontrado.</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -53,7 +63,7 @@
   
   
 
-  <!-- {% if todos_sensores %}
+  {% if todos_sensores %}
   <div class="card p-4 shadow" style="width: 100%; max-width: 1000px; margin-top: 0.5rem;">
     <h3 class="text-center mb-4">Sensores dos Clientes</h3>
 
@@ -63,6 +73,7 @@
           <tr>
             <th style="background-color: #EF233C; color: white;">Número Serial</th>
             <th style="background-color: #EF233C; color: white;">Descrição</th>
+            <th style="background-color: #EF233C; color: white;">Tipo</th>
             <th style="background-color: #EF233C; color: white;">Controlador</th>
             <th style="background-color: #EF233C; color: white;">Cadastrado por</th>
             <th style="background-color: #EF233C; color: white;">Cadastrado em</th>
@@ -75,13 +86,16 @@
           <tr>
             <td>{{ obj.numero_serial }}</td>
             <td>{{ obj.descricao }}</td>
+            <td>{{ obj.get_tipo_sensor_display }}</td>
             <td>{{ obj.controlador }}</td>
             <td>{{ obj.cadastrado_por }}</td>
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <a href="{% url 'editar-sensor-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-sensor-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+                <a href="{% url 'editar-sensor-admin' obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                <a href="{% url 'excluir-sensor-admin' obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+              </div>
             </td>
           </tr>
           {% empty %}
@@ -93,7 +107,7 @@
       </table>
     </div>
   </div>
-  {% endif %} -->
+  {% endif %}
   
 
 </div>

@@ -109,13 +109,49 @@ class LeituraCreateView(View):
 #     return JsonResponse(dados)
 
 # Página inicial
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = 'paginasweb/index.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        meus_sensores = Sensor.objects.filter(controlador__usuario=self.request.user)
+
+        labels_temp = []
+        data_temp = []
+
+        labels_umid = []
+        data_umid = []
+
+        # Obtendo as últimas 10 leituras de temperatura e umidade
+        leituras_temp = Leitura.objects.filter(sensor__tipo_sensor="1").order_by('-data')[:10]
+        leituras_umid = Leitura.objects.filter(sensor__tipo_sensor="2").order_by('-data')[:10]
+        # leituras_temp = Leitura.objects.filter(sensor__tipo_sensor="1", sensor__in=meus_sensores).order_by('-data')[:10]
+        # leituras_umid = Leitura.objects.filter(sensor__tipo_sensor="2", sensor__in=meus_sensores).order_by('-data')[:10]
+
+        # Processando as leituras de temperatura
+        for leitura in leituras_temp:
+            labels_temp.append(leitura.data.strftime('%d/%m'))  # Formato da data
+            data_temp.append(leitura.valor)  # Valor da temperatura
+
+        # Processando as leituras de umidade
+        for leitura in leituras_umid:
+            labels_umid.append(leitura.data.strftime('%d/%m'))  # Formato da data
+            data_umid.append(leitura.valor)  # Valor da umidade
+
+        # Adicionando os dados ao contexto
+        context['labels_temp'] = labels_temp
+        context['data_temp'] = data_temp
+
+        context['labels_umid'] = labels_umid
+        context['data_umid'] = data_umid
+
+        return context
 
 # Página inicial quando o cliente faz login
 
-class IndexClienteView(TemplateView):
-    template_name = 'paginasweb/index.html'
+# class IndexClienteView(TemplateView):
+#     template_name = 'paginasweb/index.html'
 
 # Página "sobre"
 class SobreView(TemplateView):
@@ -136,17 +172,54 @@ class RegraView(TemplateView):
 #Página "Controlador" do Admin
 class ControladorViewAdmin(GroupRequiredMixin, TemplateView):
      group_required = u"Administrador"
-     template_name = 'paginasweb/cadastrar/formadminsenha.html'
+     template_name = 'paginasweb/cadastrar/form.html'
 
 #Página "Regra" do Admin
 class RegraViewAdmin(GroupRequiredMixin, TemplateView):
      group_required = u"Administrador"
-     template_name = 'paginasweb/cadastrar/formadminsenha.html'
+     template_name = 'paginasweb/cadastrar/form.html'
 
 #Página "Admin"
 class AdminView(GroupRequiredMixin, TemplateView):
      group_required = u"Administrador"
      template_name = 'paginasweb/adminindex.html'
+
+
+
+class CreateView(CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class UpdateView(UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class DeleteView(DeleteView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class ListView(ListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class TemplateView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
 
 
 
@@ -209,7 +282,7 @@ class ControladorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
     group_required = [u"Administrador"]
     model = Controlador
     fields = ['nome', 'descricao', 'usuario']
-    template_name = 'paginasweb/formadminsenha.html'
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-controlador')
     extra_context = {
         'titulo': 'Cadastro de controlador',
@@ -226,14 +299,19 @@ class ControladorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
 class SensorCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
     group_required = [u"Administrador"]
     model = Sensor
-    fields = ['numero_serial', 'descricao', 'controlador', 'cadastrado_por']
-    template_name = 'paginasweb/formadminsenha.html'
+    fields = ['numero_serial', 'descricao', 'tipo_sensor', 'controlador']
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-sensor')
     extra_context = {
         'titulo': 'Cadastro de sensor',
         'botao': 'Cadastrar'
     }
     success_message = "Sensor criado com sucesso!"
+
+    def form_valid(self, form):
+        form.instance.cadastrado_por = self.request.user  # Define o usuário logado como quem cadastrou o controlador
+        url = super().form_valid(form)
+        return url
 
 
 class RegraCreate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, CreateView):
@@ -267,7 +345,7 @@ class RegraCreateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
     group_required = [u"Administrador"]
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
-    template_name = 'paginasweb/formadminsenha.html'
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-regra')
     extra_context = {
         'titulo': 'Cadastro de regra',
@@ -339,7 +417,7 @@ class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
     group_required = u"Administrador"
     model = Controlador
     fields = ['nome', 'descricao', 'usuario']
-    template_name = 'paginasweb/formadminsenha.html'
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-controlador')
     extra_context = {
         'titulo': 'Atualização de controlador',
@@ -351,8 +429,8 @@ class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequi
 class SensorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
     group_required = u"Administrador"
     model = Sensor
-    fields = ['numero_serial', 'descricao', 'controlador', 'cadastrado_por']
-    template_name = 'paginasweb/formadminsenha.html'
+    fields = ['numero_serial', 'descricao', 'tipo_sensor', 'controlador']
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-sensor')
     extra_context = {
         'titulo': 'Atualização de sensor',
@@ -388,7 +466,7 @@ class RegraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMix
     group_required = [u"Administrador"]
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
-    template_name = 'paginasweb/formadminsenha.html'
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-regra')
     extra_context = {
         'titulo': 'Cadastro de regra',
@@ -406,7 +484,7 @@ class LeituraUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredM
     group_required = u"Administrador"
     model = Leitura
     fields = ['valor', 'data', 'sensor']
-    template_name = 'paginasweb/formadminsenha.html'
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('index')
     extra_context = {
         'titulo': 'Atualização de leitura',
@@ -453,7 +531,7 @@ class ControladorDelete(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMi
 class SensorDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, DeleteView):
     group_required = [u"Administrador"]
     model = Sensor
-    template_name = 'paginasweb/formadminsenha.html'
+    template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-sensor')
     extra_context = {
         'titulo': 'Excluir sensor',
@@ -513,7 +591,7 @@ class LeituraDeleteAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredM
 class ControladorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
     group_required = [u"Administrador", u"Usuário"]
     model = Controlador
-    template_name = 'paginasweb/controladorcadastro_completo.html'
+    template_name = 'paginasweb/controlador.html'
 
     def get_queryset(self):
         queryset = Controlador.objects.all()
@@ -555,7 +633,7 @@ class SensorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, Li
 class RegraList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, ListView):
     group_required = [u"Administrador", u"Usuário"]
     model = Regra
-    template_name = 'paginasweb/regrascadastro_completo.html'
+    template_name = 'paginasweb/regra.html'
 
     def get_queryset(self):
         queryset = Regra.objects.all()

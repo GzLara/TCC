@@ -40,23 +40,24 @@ urlpatterns = [
     # Registo de usuário no sistema
     path('registrar/', UsuarioCreate.as_view(), name='registrar'),
 
-    #parte tcc
-    #path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
-    path('login-admin/', redirecionar_para_adminindex, name='login-admin'),  # onde o formulário envia
     path('api/leituras/', LeituraCreateView.as_view(), name='leituras_create'),
-    path('index/', grafico_dados, name='grafico'),
-    path('adminindex/', grafico_dadosadmin, name='graficoadmin'),
-    path('controladores-completo/', ControladorAdminComClienteView.as_view(), name='controladores-completo'),
-    path('regras-completo/', RegraAdminComClienteView.as_view(), name='regras-completo'),
+
+    #parte tcc
+    # path('login-admin/', redirecionar_para_adminindex, name='login-admin'),  # onde o formulário envia
+    #path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
+    # path('index/', grafico_dados, name='grafico'),
+    # path('adminindex/', grafico_dadosadmin, name='graficoadmin'),
+    # path('controladores-completo/', ControladorAdminComClienteView.as_view(), name='controladores-completo'),
+    # path('regras-completo/', RegraAdminComClienteView.as_view(), name='regras-completo'),
 
 
-    path('', redirecionar_para_login, name='redirecionar-login'),  # Página inicial
+    # path('', redirecionar_para_login, name='redirecionar-login'),  # Página inicial
     path('index/', IndexView.as_view(), name='index'), # Página quando o cliente loga
     path('sobre/', SobreView.as_view(), name='sobre'),  # Página sobre
-    path('cadastro/', CadastroView.as_view(), name='cadastro'), # Pagina de cadastro de clientes
-    path('controlador/', ControladorView.as_view(), name='controlador'), # Pagina de cadastro de controlador
-    path('adminindex/', AdminView.as_view(), name='adminindex'), # Página da área do Admin
-    path('regras/', RegraView.as_view(), name='regras'), # Página de regras
+    # path('cadastro/', CadastroView.as_view(), name='cadastro'), # Pagina de cadastro de clientes
+    # path('controlador/', ControladorView.as_view(), name='controlador'), # Pagina de cadastro de controlador
+    # path('adminindex/', AdminView.as_view(), name='adminindex'), # Página da área do Admin
+    # path('regras/', RegraView.as_view(), name='regras'), # Página de regras
 
 
     # Views ajustadas para usuário e administrador
