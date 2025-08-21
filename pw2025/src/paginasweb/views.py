@@ -182,7 +182,7 @@ class RegraViewAdmin(GroupRequiredMixin, TemplateView):
 #Página "Admin"
 class AdminView(GroupRequiredMixin, TemplateView):
      group_required = u"Administrador"
-     template_name = 'paginasweb/adminindex.html'
+     template_name = 'paginasweb/index.html'
 
 
 
@@ -228,7 +228,7 @@ class CustomLoginView(LoginView):
 
     def get_success_url(self):
         if self.request.user.is_superuser:
-            return reverse_lazy('adminindex')
+            return reverse_lazy('index')
         else:
             return reverse_lazy('login')
 
@@ -666,9 +666,9 @@ class UserList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, List
 ########################################################## Teste user permitido
 
 
-def redirecionar_para_adminindex(request):
+def redirecionar_para_index(request):
     if request.method == 'POST':
-        return redirect('adminindex')  # redireciona para a página principal do admin
+        return redirect('index')  # redireciona para a página principal do admin
     
 def redirecionar_para_login(request):
         return redirect('login')  # redireciona para a página inícial (login)
@@ -725,7 +725,7 @@ def grafico_dadosadmin(request):
         labels.append(leitura.data.strftime('%d/%m'))  # formato da data
         data.append(leitura.valor)
 
-    return render(request, 'paginasweb/adminindex.html',  {
+    return render(request, 'paginasweb/index.html',  {
         'labels': labels[::-1],  # inverte para mostrar do mais antigo ao mais recente
         'data': data[::-1]
     })

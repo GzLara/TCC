@@ -44,7 +44,7 @@ urlpatterns = [
 
     #parte tcc
     # path('login-admin/', redirecionar_para_adminindex, name='login-admin'),  # onde o formulário envia
-    #path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
+    path("api/leitura/", LeituraCreateView.as_view(), name="leitura-create"),
     # path('index/', grafico_dados, name='grafico'),
     # path('adminindex/', grafico_dadosadmin, name='graficoadmin'),
     # path('controladores-completo/', ControladorAdminComClienteView.as_view(), name='controladores-completo'),
@@ -52,7 +52,7 @@ urlpatterns = [
 
 
     # path('', redirecionar_para_login, name='redirecionar-login'),  # Página inicial
-    path('index/', IndexView.as_view(), name='index'), # Página quando o cliente loga
+    path('', IndexView.as_view(), name='index'), # Página quando o cliente loga
     path('sobre/', SobreView.as_view(), name='sobre'),  # Página sobre
     # path('cadastro/', CadastroView.as_view(), name='cadastro'), # Pagina de cadastro de clientes
     # path('controlador/', ControladorView.as_view(), name='controlador'), # Pagina de cadastro de controlador

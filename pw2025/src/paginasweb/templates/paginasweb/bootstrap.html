@@ -9,7 +9,7 @@
     <meta name="description" content="">
 
     {% block titulo %}
-    <title>Sticky Footer Navbar Template · Bootstrap v5.3</title>
+    <title>Coraline: Início</title>
     {% endblock titulo %}    
 
 
@@ -35,9 +35,11 @@
             <div class="collapse navbar-collapse justify-content-center" id="navbarCollapse">
               <!-- Centralizado -->
               <ul class="navbar-nav mb-2 mb-md-0">
-                
+  
                 <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "index" %}"><i class="bi bi-house"></i> Início</a></li>
-                
+
+                {% if request.user.is_authenticated %}
+
                 <!-- Dropdown "Listar" -->
                  {% if not sou_admin %}
                 <li class="nav-item mx-3 dropdown">
@@ -78,8 +80,6 @@
 
 
                 <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "listar-leitura" %}">Registros de leitura</a></li>
-
-                <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "sobre" %}">Sobre nós</a></li>
                 
               </ul>
             </div>
@@ -88,11 +88,10 @@
             <div class="dropdown">
               <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown"
                 aria-expanded="false">
-                
+                <i class="bi bi-person-badge-fill"></i>
                 {{request.user.username}}
-                
               </a>
-              <ul class="dropdown-menu dropdown-menu-end">
+              <ul class="dropdown-menu dropdown-menu-end fs-5">
                 <li><a class="dropdown-item" href="{% url "meus-dados" %}">Meus dados</a></li>
                 <li><a class="dropdown-item" href="{% url "senha" %}">Alterar senha</a></li>
                 <li><hr class="dropdown-divider"></li>
@@ -101,6 +100,15 @@
             </div>
       
           </div>
+
+          {% else %}
+
+                <li class="nav-item mx-3"><a class="nav-link link-light"  href="{% url "sobre" %}">Sobre nós</a></li>
+          {% endif %}
+            
+              
+               
+               
         </nav>
       </header>
       
@@ -122,8 +130,8 @@
     </main>
     
     
-    <footer class="footer mt-auto py-3 bg-body-tertiary">
-        <div class="container"> <span class="text-body-secondary">Place sticky footer content here.</span> </div>
+    <footer class="footer mt-auto py-3 bg-body-amarelinho text-center">
+        <div class="container"> <span class="text-body-secondary">Desenvolvido por Lara Gazola e Thiago Nicoletti</span> </div>
     </footer>
 
 
