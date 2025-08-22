@@ -84,7 +84,7 @@ urlpatterns = [
     path('administrador/excluir/leitura/<int:pk>/', LeituraDeleteAdmin.as_view(), name='excluir-leitura-admin'),
 
     path('excluir/controlador/<int:pk>/', ControladorDelete.as_view(), name='excluir-controlador'),
-    path('excluir/regra/<int:pk>/', RegraDelete.as_view(), name='excluir-regra-admin'),
+    path('excluir/regra/<int:pk>/', RegraDelete.as_view(), name='excluir-regra'),
 
     path("listar/controlador/", ControladorList.as_view(), name="listar-controlador"),
     path("listar/regra/", RegraList.as_view(), name="listar-regra"),

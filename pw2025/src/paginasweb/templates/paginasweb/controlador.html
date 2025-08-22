@@ -36,8 +36,10 @@
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+              </div>
             </td>
           </tr>
           {% empty %}
@@ -80,8 +82,10 @@
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+              <a href="{% url 'editar-controlador' obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+              <a href="{% url 'excluir-controlador' obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+              </div>
             </td>
           </tr>
           {% empty %}

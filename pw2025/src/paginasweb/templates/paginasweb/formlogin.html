@@ -28,13 +28,13 @@
 
       {{ form|crispy }}
       <div class="d-flex justify-content-end align-items-center mt-3">
-          <span class="me-1 small">Não possui conta?</span>
-          <a class="btn btn-secondary p-0 m-0 small" href="{% url 'registrar' %}" role="button">Cadastrar-se</a>
+          <span class="me-1 medium">Não possui conta?</span>
+          <a class="btn text-danger p-0 m-0 small" href="{% url 'registrar' %}" role="button">Cadastrar-se</a>
         </div>
 
 
       <div class="text-center">
-  <button type="submit" class="btn btn-quaternary mt-3">{{ botao }}</button>
+  <button type="submit" class="btn btn-quaternary rounded-4 mt-3 ">{{ botao }}</button>
       </div>
     </form>
 

@@ -21,7 +21,7 @@
             <th style="background-color: #58a4b0; color: white;">Horário de Fim</th>
             <th style="background-color: #58a4b0; color: white;">Valor Mínimo</th>
             <th style="background-color: #58a4b0; color: white;">Valor Máximo</th>
-            <th style="background-color: #58a4b0; color: white;">Controlador</th>
+            <th style="background-color: #58a4b0; color: white;">Sensor</th>
             <th style="background-color: #58a4b0; color: white;">Usuário</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado por</th>
             <th style="background-color: #58a4b0; color: white;">Cadastrado em</th>
@@ -37,15 +37,15 @@
             <td>{{ obj.horario_fim }}</td>
             <td>{{ obj.valor_minimo }}</td>
             <td>{{ obj.valor_maximo }}</td>
-            <td>{{ obj.controlador }}</td>
+            <td>{{ obj.sensor }}</td>
             <td>{{ obj.usuario }}</td>
             <td>{{ obj.cadastrado_por }}</td>
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <div class="d-flex gap-1 justify-content-center">
-                <a href="{% url "editar-regra" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-                <a href="{% url "excluir-regra" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+                <a href="{% url "editar-regra" obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                <a href="{% url "excluir-regra" obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
               </div>
             </td>
           </tr>
@@ -94,9 +94,9 @@
             <td>{{ obj.cadastrado_em }}</td>
             <td>{{ obj.atualizado_em }}</td>
             <td>
-              <div class="d-flex gap-1 justify-content-center">
-                <a href="{% url "editar-regra-admin" obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-                <a href="{% url "excluir-regra-admin" obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+                <a href="{% url "editar-regra-admin" obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+                <a href="{% url "excluir-regra" obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
               </div>
             </td>
           </tr>
