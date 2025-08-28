@@ -386,7 +386,7 @@ class UserUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixi
     template_name = 'paginasweb/form.html'
     success_url = reverse_lazy('listar-user')
     extra_context = {
-        'titulo': 'Atualizar meus dados',
+        'titulo': 'Atualizar dados do usuário',
         'botao': 'Atualizar'
     }
     success_message = "Cadastro atualizado com sucesso!"
