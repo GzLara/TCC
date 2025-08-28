@@ -30,6 +30,43 @@ from django.core.exceptions import PermissionDenied
 
 API_SECRET_KEY = "Projeto1MC"
 
+
+class CreateView(CreateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class UpdateView(UpdateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class DeleteView(DeleteView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class ListView(ListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+class TemplateView(TemplateView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.groups.filter(name='Administrador').exists():
+            context['sou_admin'] = True
+        return context
+
+
 @method_decorator(csrf_exempt, name='dispatch')
 class LeituraCreateView(View):
     def post(self, request):
@@ -183,44 +220,6 @@ class RegraViewAdmin(GroupRequiredMixin, TemplateView):
 class AdminView(GroupRequiredMixin, TemplateView):
      group_required = u"Administrador"
      template_name = 'paginasweb/index.html'
-
-
-
-class CreateView(CreateView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='Administrador').exists():
-            context['sou_admin'] = True
-        return context
-
-class UpdateView(UpdateView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='Administrador').exists():
-            context['sou_admin'] = True
-        return context
-
-class DeleteView(DeleteView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='Administrador').exists():
-            context['sou_admin'] = True
-        return context
-
-class ListView(ListView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='Administrador').exists():
-            context['sou_admin'] = True
-        return context
-
-class TemplateView(TemplateView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        if self.request.user.groups.filter(name='Administrador').exists():
-            context['sou_admin'] = True
-        return context
-
 
 
 class CustomLoginView(LoginView):
@@ -601,9 +600,9 @@ class ControladorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixi
         context = super().get_context_data(**kwargs)
 
         # Se for do grupo do grupo admin, filtra todas, menos as minhas
-        if self.request.user.groups.filter(name='Administrador').exists():
+        if context['sou_admin']:
             controladores = Controlador.objects.all()
-            controladores = controladores.exclude(usuario=self.request.user)
+            controladores = controladores.exclude(usuario=self.request.user) #user logado no self.request.user
             context['todos_controladores'] = controladores
 
         return context
@@ -622,7 +621,7 @@ class SensorList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, Li
         context = super().get_context_data(**kwargs)
 
         # Se for do grupo do grupo admin, filtra todas, menos as minhas
-        if self.request.user.groups.filter(name='Administrador').exists():
+        if context['sou_admin']:
             sensores = Sensor.objects.all()
             sensores = sensores.exclude(controlador__usuario=self.request.user)
             context['todos_sensores'] = sensores
@@ -643,7 +642,7 @@ class RegraList(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, Lis
         context = super().get_context_data(**kwargs)
 
         # Se for do grupo do grupo admin, filtra todas, menos as minhas
-        if self.request.user.groups.filter(name='Administrador').exists():
+        if context['sou_admin']:
             regras = Regra.objects.all()
             regras = regras.exclude(usuario=self.request.user)
             context['todas_regras'] = regras
