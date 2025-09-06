@@ -9,6 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.timezone import make_aware
+import json
 
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -67,6 +68,8 @@ class TemplateView(TemplateView):
         return context
 
 
+  
+
 @method_decorator(csrf_exempt, name='dispatch')
 class LeituraCreateView(View):
     def post(self, request):
@@ -75,12 +78,18 @@ class LeituraCreateView(View):
             return HttpResponseForbidden("Chave de API inválida")
 
         try:
+            raw_body = request.body.decode("utf-8")
+            print("📩 RAW BODY RECEBIDO:", raw_body)   # <<< DEBUG
+        
+            data = json.loads(raw_body)
+            print("📩 JSON PARSED:", data)             # <<< DEBUG
+      
             data_str = request.POST.get("data")
             time_str = request.POST.get("time")
-            sensors_total_str = request.POST.get("sensors_total")
+            totalSensors_str = request.POST.get("totalSensors")
 
-            if not all([data_str, time_str, sensors_total_str]):
-                return HttpResponseBadRequest("Campos obrigatórios: data, time, sensors_total")
+            if not all([data_str, time_str, totalSensors_str]):
+                return HttpResponseBadRequest("Campos obrigatórios: data, time, totalSensors")
 
             data_parsed = parse_date(data_str)
             time_parsed = parse_time(time_str)
@@ -91,13 +100,13 @@ class LeituraCreateView(View):
             datahora_aware = make_aware(datahora)
 
             try:
-                sensors_total = int(sensors_total_str)
+                totalSensors = int(totalSensors_str)
             except ValueError:
-                return HttpResponseBadRequest("sensors_total inválido")
+                return HttpResponseBadRequest("totalSensors inválido")
 
             leituras_criadas = []
-            for i in range(1, sensors_total + 1):
-                sensor_key = f"sensor_type{i}"
+            for i in range(1, totalSensors + 1):
+                sensor_key = f"sensor{i}"
                 value_key = f"value{i}"
 
                 sensor = request.POST.get(sensor_key)
