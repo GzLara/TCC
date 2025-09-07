@@ -9,7 +9,6 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_date, parse_time
 from django.utils.timezone import make_aware
-import json
 
 from datetime import datetime
 from decimal import Decimal, InvalidOperation
@@ -68,74 +67,60 @@ class TemplateView(TemplateView):
         return context
 
 
-  
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LeituraCreateView(View):
-    def post(self, request):
-        auth_header = request.headers.get("X-API-KEY")
-        if auth_header != API_SECRET_KEY:
-            return HttpResponseForbidden("Chave de API inválida")
+    def post(self, request, *args, **kwargs):
+        data = request.POST.dict()
+        data_str = data.get("data")
+        time_str = data.get("time")
+        total_sensors = int(data.get("totalSensors", 0))
 
         try:
-            raw_body = request.body.decode("utf-8")
-            print("📩 RAW BODY RECEBIDO:", raw_body)   # <<< DEBUG
-        
-            data = json.loads(raw_body)
-            print("📩 JSON PARSED:", data)             # <<< DEBUG
-      
-            data_str = request.POST.get("data")
-            time_str = request.POST.get("time")
-            totalSensors_str = request.POST.get("totalSensors")
-
-            if not all([data_str, time_str, totalSensors_str]):
-                return HttpResponseBadRequest("Campos obrigatórios: data, time, totalSensors")
-
-            data_parsed = parse_date(data_str)
-            time_parsed = parse_time(time_str)
-            if not data_parsed or not time_parsed:
-                return HttpResponseBadRequest("Data ou hora inválida")
-
-            datahora = datetime.combine(data_parsed, time_parsed)
-            datahora_aware = make_aware(datahora)
-
-            try:
-                totalSensors = int(totalSensors_str)
-            except ValueError:
-                return HttpResponseBadRequest("totalSensors inválido")
+            datahora = datetime.strptime(f"{data_str} {time_str}", "%Y-%m-%d %H:%M:%S")
 
             leituras_criadas = []
-            for i in range(1, totalSensors + 1):
-                sensor_key = f"sensor{i}"
-                value_key = f"value{i}"
 
-                sensor = request.POST.get(sensor_key)
-                value_str = request.POST.get(value_key)
+            for i in range(1, total_sensors + 1):
+                tipo = data.get(f"sensor{i}")   # "Temperatura" ou "Umidade"
+                valor = data.get(f"value{i}")
 
-                if not sensor or not value_str:
-                    return HttpResponseBadRequest(f"Faltando dados para sensor {i}")
+                if tipo is None or valor is None:
+                    continue
 
                 try:
-                    valor = Decimal(value_str)
-                except InvalidOperation:
-                    return HttpResponseBadRequest(f"Valor inválido para sensor {i}")
+                    valor_decimal = Decimal(valor)
+                except:
+                    continue
+
+                # Mapeia tipo do ESP32 para seu tipo_sensor
+                tipo_map = {
+                    "Temperatura": "1",
+                    "Umidade": "2"
+                }
+                tipo_sensor = tipo_map.get(tipo)
+
+                # Busca o sensor no banco
+                sensor_obj = Sensor.objects.filter(tipo_sensor=tipo_sensor).first()
+                if not sensor_obj:
+                    continue
 
                 leitura = Leitura.objects.create(
-                    data=datahora_aware,
-                    sensor=sensor,
-                    valor=valor
+                    data=datahora,
+                    sensor=sensor_obj,
+                    valor=valor_decimal
                 )
+
                 leituras_criadas.append({
-                    "sensor": sensor,
-                    "valor": str(valor),
-                    "id": leitura.id
+                    "tipo": tipo,
+                    "valor": str(leitura.valor)
                 })
 
-                return JsonResponse({"status": "sucesso", "leituras": leituras_criadas})
-    
+            return JsonResponse({"status": "sucesso", "leituras": leituras_criadas})
+
         except Exception as e:
             return HttpResponseBadRequest(f"Erro inesperado: {str(e)}")
-    
+
 
     
 # def grafico_dados(request):

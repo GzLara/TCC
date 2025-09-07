@@ -55,7 +55,6 @@ class Leitura(models.Model):
     valor = models.FloatField()
     data = models.DateTimeField()
     sensor = models.ForeignKey(Sensor, on_delete=models.CASCADE, null=True)
-    sensor = models.CharField(max_length=50)
     
     cadastrado_por = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, related_name='leituras')
     cadastrado_em = models.DateTimeField(auto_now_add=True)
