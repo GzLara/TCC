@@ -36,6 +36,8 @@ class CreateView(CreateView):
         context = super().get_context_data(**kwargs)
         if self.request.user.groups.filter(name='Administrador').exists():
             context['sou_admin'] = True
+        else:
+            context['sou_admin'] = False
         return context
 
 class UpdateView(UpdateView):
@@ -43,6 +45,8 @@ class UpdateView(UpdateView):
         context = super().get_context_data(**kwargs)
         if self.request.user.groups.filter(name='Administrador').exists():
             context['sou_admin'] = True
+        else:
+            context['sou_admin'] = False
         return context
 
 class DeleteView(DeleteView):
@@ -50,6 +54,8 @@ class DeleteView(DeleteView):
         context = super().get_context_data(**kwargs)
         if self.request.user.groups.filter(name='Administrador').exists():
             context['sou_admin'] = True
+        else:
+            context['sou_admin'] = False
         return context
 
 class ListView(ListView):
@@ -57,6 +63,8 @@ class ListView(ListView):
         context = super().get_context_data(**kwargs)
         if self.request.user.groups.filter(name='Administrador').exists():
             context['sou_admin'] = True
+        else:
+            context['sou_admin'] = False
         return context
 
 class TemplateView(TemplateView):
@@ -64,6 +72,8 @@ class TemplateView(TemplateView):
         context = super().get_context_data(**kwargs)
         if self.request.user.groups.filter(name='Administrador').exists():
             context['sou_admin'] = True
+        else:
+            context['sou_admin'] = False
         return context
 
 
@@ -220,10 +230,7 @@ class CustomLoginView(LoginView):
     template_name = 'formlogin.html'
 
     def get_success_url(self):
-        if self.request.user.is_superuser:
-            return reverse_lazy('index')
-        else:
-            return reverse_lazy('login')
+        return reverse_lazy('index')
 
 
 class UsuarioCreate(SuccessMessageMixin, CreateView):
