@@ -7,8 +7,9 @@
     <title>Lista de Clientes</title>
     {% endblock titulo %}
 
-<div class="d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card p-4 shadow flex-fill" style="width: 100%; max-width: 1000px; ">
+    <div class="d-flex justify-content-center align-items-center flex-column min-vh-100 p-4" style="margin-top: -2rem; margin-bottom: 2rem;">
+      <!-- TABELA ADMIN -->
+      <div class="card p-4 shadow mb-5" style="width: 100%; max-width: 1000px;">
     <h3 class="text-center mb-4">Lista de clientes cadastrados</h3>
 
     <div class="table-responsive">
@@ -28,8 +29,10 @@
             <td>{{ obj.email }}</td>
             <td>{{ obj.date_joined }}</td>
             <td>
-              <a href="{% url 'editar-user-admin' obj.pk %}" class="btn btn-sm btn-warning me-1">Editar</a>
-              <a href="{% url 'excluir-user-admin' obj.pk %}" class="btn btn-sm btn-danger">Excluir</a>
+              <div class="btn-group">
+              <a href="{% url 'editar-user-admin' obj.pk %}" class="btn btn-sm btn-warning"><i class="bi bi-pencil-square"></i></a>
+              <a href="{% url 'excluir-user-admin' obj.pk %}" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></a>
+              </div>
             </td>
           </tr>
           {% empty %}

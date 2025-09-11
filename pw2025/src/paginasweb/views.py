@@ -155,8 +155,8 @@ class IndexView(LoginRequiredMixin, TemplateView):
         data_umid = []
 
         # Obtendo as últimas 10 leituras de temperatura e umidade
-        leituras_temp = Leitura.objects.filter(sensor__tipo_sensor="1").order_by('-data')[:10]
-        leituras_umid = Leitura.objects.filter(sensor__tipo_sensor="2").order_by('-data')[:10]
+        leituras_temp = Leitura.objects.filter(sensor__tipo_sensor="1").order_by('data')[:10]
+        leituras_umid = Leitura.objects.filter(sensor__tipo_sensor="2").order_by('data')[:10]
         # leituras_temp = Leitura.objects.filter(sensor__tipo_sensor="1", sensor__in=meus_sensores).order_by('-data')[:10]
         # leituras_umid = Leitura.objects.filter(sensor__tipo_sensor="2", sensor__in=meus_sensores).order_by('-data')[:10]
 
@@ -675,7 +675,7 @@ class ControladorAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, Tem
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['controladores_admin'] = ControladorAdmin.objects.all()
+        context['controladores_admin'] = ControladorViewAdmin.objects.all()
         context['listar_controlador'] = Controlador.objects.all()
         return context
 
@@ -685,7 +685,7 @@ class RegraAdminComClienteView(GroupRequiredMixin, LoginRequiredMixin, TemplateV
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['regras_admin'] = RegraAdmin.objects.all()
+        context['regras_admin'] = RegraViewAdmin.objects.all()
         context['listar_regra'] = Regra.objects.all()
         return context
     
