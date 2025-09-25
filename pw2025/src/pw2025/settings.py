@@ -143,8 +143,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATIC_ROOT = 'static_gcloud/' 
+
 STATICFILES_DIRS = [
-    BASE_DIR / 'static', # Configura o diretório de arquivos estáticos que fica na raiz do projeto
+
+    BASE_DIR / 'static',
+
 ]
 
 # Default primary key field type

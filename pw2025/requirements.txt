@@ -1,7 +1,0 @@
-Django==2.2.12
-django-braces==1.17.0
-django-cleanup==8.1.0
-django-crispy-forms==1.13.0
-pytz==2025.2
-sqlparse==0.4.4
-crispy-bootstrap5

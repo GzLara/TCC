@@ -1,0 +1,198 @@
+body{
+    background-color: #faf1c3;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 18px;
+}
+
+#menu{
+    list-style: none;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0;
+    background-color: #EF233C;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+   
+}
+
+
+#menuadmin {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.menu-centro, .menu-centro-admin {
+  align-items: center;
+  display: flex;
+  margin: 0 auto; /* centraliza horizontalmente */
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  gap: 20px;
+}
+
+.menu-fora, .menu-fora-admin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  gap: 20px
+}
+
+
+#menu li{
+    display: flex;
+    margin-right: 10px;
+    align-items: center;
+}
+
+#menu li a{
+    text-decoration: none;
+    color: #ffffff;
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #EF233C;
+}
+#menu li a:hover{
+    border-radius: 12px;
+    background-color: #faf1c3;
+  
+}
+
+
+div.mb-3 {
+    text-align: left;
+}
+
+.footer {
+  position: bottom;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #faf1c3;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centraliza horizontalmente */
+  font-size: 16px;
+  z-index: 1000;
+  text-align: center; /* segurança extra */
+}
+
+.btn-primary {
+  background-color: #EF233C !important; /* Usa !important se Bootstrap estiver sendo usado */
+  border-color: #EF233C !important;
+  
+}
+
+.btn-primary:hover {
+  background-color: #ab192a !important;
+  border-color: #ab192a !important;
+   transition: 0.3s ease;
+
+}
+
+.btn-secondary {
+  background-color: white !important; /* Usa !important se Bootstrap estiver sendo usado */
+  border-color: white !important;
+  color: black !important;
+  
+}
+
+.btn-secondary:hover {
+  background-color: white !important;
+  border-color: white !important;
+  color: #EF233C !important;
+  transition: 0.3s ease;
+}
+
+.btn-tertiary {
+  background-color: #f7d113 !important; /* Usa !important se Bootstrap estiver sendo usado */
+  border-color: #f7d113 !important;
+  color: black;
+}
+
+.btn-tertiary:hover {
+  background-color: #c4a719 !important;
+  border-color: #c4a719 !important;
+  transition: 0.3s ease;
+
+}
+
+.btn-quaternary {
+  background-color: #EF233C !important; /* Usa !important se Bootstrap estiver sendo usado */
+  border-color: #EF233C !important;
+  color: white !important;
+  
+  
+}
+
+.btn-quaternary:hover {
+  background-color: #ab192a !important;
+  border-color: #ab192a !important;
+  transition: 0.3s ease;
+
+}
+
+
+#menuadmin{
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+    background-color: #58a4b0;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+#menuadmin li{
+    display: inline;
+    margin-right: 10px;
+}
+#menuadmin li a{
+    text-decoration: none;
+    color: #ffff;
+    display: inline-block;
+    padding: 5px 10px;
+    background-color: #58a4b0;
+    
+}
+#menuadmin li a:hover{
+    border-radius: 12px;
+    background-color: #d9e9ff;
+    color: black;
+}
+
+body.admin{
+    background-color: #d9e9ff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: 18px
+}
+
+
+.footeradmin {
+  position: bottom;
+  left: 0;
+  width: 100%;
+  height: 50px;
+  background-color: #d9e9ff;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* centraliza horizontalmente */
+  font-size: 16px;
+  z-index: 1000;
+  text-align: center; /* segurança extra */
+}
+
+.wrapper {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
