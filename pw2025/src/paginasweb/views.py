@@ -396,7 +396,7 @@ class UserUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixi
 
 
 class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    group_required = [u"Usuário"]
+    group_required = [u"Usuário", u"Administrador"]
     model = Controlador
     fields = ['nome', 'descricao']
     template_name = 'paginasweb/form.html'
@@ -406,11 +406,6 @@ class ControladorUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMi
     'botao': 'Salvar'
     }
     success_message = "Controlador atualizado com sucesso!"
-
-    # Busca o objeto com a pk e o usuário autenticado
-    def get_object(self, queryset=None):
-        self.object = get_object_or_404(Controlador, pk=self.kwargs['pk'], usuario=self.request.user)
-        return self.object
 
 
 class ControladorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
@@ -440,7 +435,7 @@ class SensorUpdateAdmin(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMi
 
 
 class RegraUpdate(GroupRequiredMixin, SuccessMessageMixin, LoginRequiredMixin, UpdateView):
-    group_required = [u"Usuário"]
+    group_required = [u"Usuário", u"Administrador"]
     model = Regra
     fields = ['descricao', 'horario_inicio', 'horario_fim', 'valor_minimo', 'valor_maximo', 'sensor']
     template_name = 'paginasweb/form.html'
